@@ -155,6 +155,8 @@ func (a *AllServers) Count() (count int) {
 type Servers struct {
 	Version   uint16   `json:"version"`
 	Timestamp int64    `json:"timestamp"`
+	Preferred bool     `json:"preferred,omitempty"`
+	Filepath  string   `json:"filepath,omitempty"`
 	Servers   []Server `json:"servers,omitempty"`
 }
 

@@ -9,9 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
-	"github.com/qdm12/gluetun/internal/storage"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -80,10 +78,9 @@ func (c *CLI) FormatServers(args []string) error {
 		}
 	}
 
-	logger := newNoopLogger()
-	storage, err := storage.New(logger, constants.ServersData)
+	storage, err := setupStorage(newNoopLogger())
 	if err != nil {
-		return fmt.Errorf("creating servers storage: %w", err)
+		return fmt.Errorf("setting up storage: %w", err)
 	}
 
 	formatted, err := storage.Format(providerToFormat, format)

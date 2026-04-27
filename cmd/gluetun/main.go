@@ -171,7 +171,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	defer fmt.Println(gluetunLogo)
 
-	announcementExp, err := time.Parse(time.RFC3339, "2026-04-30T00:00:00Z")
+	announcementExp, err := time.Parse(time.RFC3339, "2026-06-30T00:00:00Z")
 	if err != nil {
 		return err
 	}
@@ -182,7 +182,7 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		Version:      buildInfo.Version,
 		Commit:       buildInfo.Commit,
 		Created:      buildInfo.Created,
-		Announcement: "Set BORINGPOLL_GLUETUNCOM=on to help combat AI slop and shutdown that scam website",
+		Announcement: "Your servers data files are now migrated to /gluetun/servers/",
 		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
@@ -245,7 +245,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	// TODO run this in a loop or in openvpn to reload from file without restarting
 	storageLogger := logger.New(log.SetComponent("storage"))
-	storage, err := storage.New(storageLogger, *allSettings.Storage.Filepath)
+	storage, err := storage.New(storageLogger, *allSettings.Storage.ServersPath,
+		*allSettings.Storage.LegacyServersFilepath)
 	if err != nil {
 		return err
 	}

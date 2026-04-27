@@ -90,7 +90,7 @@ func Test_Settings_String(t *testing.T) {
 |   ├── Logging: yes
 |   └── Authentication file path: /gluetun/auth/config.toml
 ├── Storage settings:
-|   └── Filepath: /gluetun/servers.json
+|   └── Servers directory path: /gluetun/servers/
 ├── OS Alpine settings:
 |   ├── Process UID: 1000
 |   └── Process GID: 1000
