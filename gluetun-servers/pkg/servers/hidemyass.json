@@ -1,0 +1,3443 @@
+{
+  "version": 2,
+  "timestamp": 1632268040,
+  "servers": [
+    {
+      "vpn": "openvpn",
+      "country": "Afghanistan",
+      "city": "Kabul",
+      "hostname": "af.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.236",
+        "5.62.63.232"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Aland Islands",
+      "city": "Mariehamn",
+      "hostname": "ax.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.248",
+        "5.62.63.244"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Albania",
+      "city": "Tirana",
+      "hostname": "al.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.240",
+        "5.62.63.236"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Algeria",
+      "city": "Annaba",
+      "hostname": "dz.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.244",
+        "5.62.63.240"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "American Samoa",
+      "city": "Pago Pago",
+      "hostname": "as.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.4",
+        "5.62.58.4"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Andorra",
+      "city": "Andorrala Vella",
+      "hostname": "ad.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.4",
+        "5.62.62.4"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Angola",
+      "city": "Luanda",
+      "hostname": "ao.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.8",
+        "5.62.62.8"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Anguilla",
+      "city": "The Valley",
+      "hostname": "ai.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.8",
+        "5.62.58.8"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Antiguaand Barbuda",
+      "city": "Saint John's",
+      "hostname": "ag.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.12",
+        "5.62.58.12"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Argentina",
+      "city": "Buenos Aires",
+      "hostname": "ar.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.16",
+        "5.62.58.16"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Armenia",
+      "city": "Tsaghkadzor",
+      "hostname": "am.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.12",
+        "5.62.62.12"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Aruba",
+      "city": "Palm Beach",
+      "hostname": "aw.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.20",
+        "5.62.58.20"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Australia",
+      "region": "New South Wales",
+      "city": "Sydney",
+      "hostname": "au.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.23.3",
+        "5.62.23.18"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Austria",
+      "region": "Carinthia",
+      "city": "Klagenfurt",
+      "hostname": "at.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.253.207.3",
+        "91.132.139.115",
+        "94.198.41.94",
+        "94.198.41.110",
+        "94.198.41.142",
+        "185.183.107.163",
+        "185.210.219.99",
+        "185.244.212.30",
+        "185.244.212.35",
+        "185.244.212.190"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Azerbaijan",
+      "city": "Qusar",
+      "hostname": "az.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.16",
+        "5.62.62.16"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Bahamas",
+      "city": "Freeport",
+      "hostname": "bs.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.24",
+        "5.62.58.24"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Bahrain",
+      "city": "Manama",
+      "hostname": "bh.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.20",
+        "5.62.62.20"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Bangladesh",
+      "city": "Dhaka",
+      "hostname": "bd.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.24",
+        "5.62.62.24"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Barbados",
+      "city": "Worthing",
+      "hostname": "bb.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.28",
+        "5.62.58.28"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Belarus",
+      "city": "Minsk",
+      "hostname": "by.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.28",
+        "5.62.62.28"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Belgium",
+      "city": "Brussels",
+      "hostname": "be.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.20.24",
+        "5.62.20.33",
+        "5.62.20.34",
+        "5.62.20.44"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Belize",
+      "city": "Belize City",
+      "hostname": "bz.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.32",
+        "5.62.58.32"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Benin",
+      "city": "Cotonou",
+      "hostname": "bj.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.32",
+        "5.62.62.32"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Bermuda",
+      "city": "Hamilton",
+      "hostname": "bm.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.36",
+        "5.62.58.36"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Bhutan",
+      "city": "Thimphu",
+      "hostname": "bt.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.36",
+        "5.62.62.36"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Bolivia",
+      "city": "Santa Cruz",
+      "hostname": "bo.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.40",
+        "5.62.58.40"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Bosnia",
+      "city": "Sarajevo",
+      "hostname": "ba.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.40",
+        "5.62.62.40"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Botswana",
+      "city": "Gaborone",
+      "hostname": "bw.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.44",
+        "5.62.62.44"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Brazil",
+      "city": "Joao Pessoa",
+      "hostname": "br.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "181.215.238.207",
+        "185.54.230.50",
+        "185.54.230.130",
+        "185.54.230.170"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "British Virgin Islands",
+      "city": "Tortola",
+      "hostname": "vg.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.44",
+        "5.62.58.44"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Brunei",
+      "city": "Jerudong",
+      "hostname": "bn.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.48",
+        "5.62.62.48"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Bulgaria",
+      "city": "Sofia",
+      "hostname": "bg.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.52",
+        "5.62.62.52"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Burkina Faso",
+      "city": "Ouagadougou",
+      "hostname": "bf.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.56",
+        "5.62.62.56"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Burundi",
+      "city": "Bujumbura",
+      "hostname": "bi.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.60",
+        "5.62.62.60"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Cambodia",
+      "city": "Phnom Penh",
+      "hostname": "kh.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.64",
+        "5.62.62.64"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Cameroon",
+      "city": "Yaounde",
+      "hostname": "cm.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.68",
+        "5.62.62.68"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Canada",
+      "region": "British Columbia",
+      "city": "Vancouver",
+      "hostname": "ca.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "51.161.54.15",
+        "51.161.66.111",
+        "54.39.219.127",
+        "158.69.234.207",
+        "192.99.89.207",
+        "192.99.110.159",
+        "198.27.103.191"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Cape Verde",
+      "city": "Cidade Velha",
+      "hostname": "cv.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.72",
+        "5.62.62.72"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Cayman Islands",
+      "city": "Spot Bay",
+      "hostname": "ky.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.48",
+        "5.62.58.48"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Central African Republic",
+      "city": "Bangassou",
+      "hostname": "cf.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.76",
+        "5.62.62.76"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Chad",
+      "city": "N'Djamena",
+      "hostname": "td.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.80",
+        "5.62.62.80"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Chile",
+      "city": "Santiago",
+      "hostname": "cl.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.52",
+        "5.62.58.52"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "China",
+      "region": "Sichuan Sheng",
+      "city": "Chengdu",
+      "hostname": "cn.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.41.133",
+        "5.62.41.169",
+        "5.62.41.181",
+        "84.17.46.134",
+        "185.246.210.130",
+        "185.246.210.162",
+        "212.102.38.186"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Christmas Island",
+      "city": "Flying Fish Cove",
+      "hostname": "cx.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.88",
+        "5.62.62.84"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Cocos Islands",
+      "city": "West Island",
+      "hostname": "cc.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.92",
+        "5.62.62.88"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Colombia",
+      "city": "San Andres",
+      "hostname": "co.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.60",
+        "5.62.58.56"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Comoros",
+      "city": "Ouani",
+      "hostname": "km.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.96",
+        "5.62.62.92"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Congo",
+      "city": "Kinshasa",
+      "hostname": "cd.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.100",
+        "5.62.62.96"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Cook Islands",
+      "city": "Avarua",
+      "hostname": "ck.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.64",
+        "5.62.58.60"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Costa Rica",
+      "city": "San Jose",
+      "hostname": "cr.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.68",
+        "5.62.58.64"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Coted`Ivoire",
+      "city": "Yamoussoukro",
+      "hostname": "ci.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.104",
+        "5.62.62.100"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Croatia",
+      "city": "Zagreb",
+      "hostname": "hr.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.228",
+        "5.62.63.224"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Cuba",
+      "city": "Havana",
+      "hostname": "cu.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.72",
+        "5.62.58.68"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Cyprus",
+      "city": "Limassol",
+      "hostname": "cy.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.108",
+        "5.62.62.104"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Czech Republic",
+      "city": "Prague",
+      "hostname": "cz.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "185.246.210.130",
+        "185.246.210.146",
+        "185.246.210.162",
+        "212.102.38.186"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Denmark",
+      "city": "Copenhagen",
+      "hostname": "dk.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "2.58.46.195",
+        "37.120.232.78",
+        "37.120.232.110",
+        "37.120.232.126",
+        "37.120.232.142",
+        "95.174.65.142",
+        "95.174.65.158",
+        "185.212.169.174",
+        "185.212.169.190",
+        "185.212.169.206"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Dominica",
+      "city": "Marigot",
+      "hostname": "dm.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.76",
+        "5.62.58.72"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Dominican Republic",
+      "city": "Punta Cana",
+      "hostname": "do.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.80",
+        "5.62.58.76"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Ecuador",
+      "city": "Quito",
+      "hostname": "ec.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.84",
+        "5.62.58.80"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Egypt",
+      "city": "Cairo",
+      "hostname": "eg.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.112",
+        "5.62.62.108"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "El Salvador",
+      "city": "San Miguel",
+      "hostname": "sv.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.88",
+        "5.62.58.84"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Equatorial Guinea",
+      "city": "Malabo",
+      "hostname": "gq.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.116",
+        "5.62.62.112"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Eritrea",
+      "city": "Asmara",
+      "hostname": "er.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.120",
+        "5.62.62.116"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Estonia",
+      "city": "Tallinn",
+      "hostname": "ee.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.124",
+        "5.62.62.120"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Ethiopia",
+      "city": "Gondar",
+      "hostname": "et.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.128",
+        "5.62.62.124"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Falkland Islands",
+      "city": "Stanley",
+      "hostname": "fk.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.92",
+        "5.62.58.88"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Faroe Islands",
+      "city": "Torshavn",
+      "hostname": "fo.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.132",
+        "5.62.62.128"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Fiji",
+      "city": "Nadi",
+      "hostname": "fj.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.96",
+        "5.62.58.92"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Finland",
+      "city": "Helsinki",
+      "hostname": "fi.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "185.77.217.16",
+        "185.77.217.31",
+        "185.77.217.61",
+        "185.77.217.76",
+        "185.77.217.91",
+        "185.77.217.106"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "France",
+      "city": "Paris",
+      "hostname": "fr.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "84.17.43.90",
+        "84.17.43.103",
+        "84.17.43.116",
+        "185.93.2.114",
+        "212.83.174.92",
+        "212.83.190.239"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Gabon",
+      "city": "Libreville",
+      "hostname": "ga.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.136",
+        "5.62.62.132"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Gambia",
+      "city": "Serekunda",
+      "hostname": "gm.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.140",
+        "5.62.62.136"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Georgia",
+      "city": "Tbilisi",
+      "hostname": "ge.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.144",
+        "5.62.62.140"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Germany",
+      "region": "Hesse",
+      "city": "Frankfurt",
+      "hostname": "de.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.41.121",
+        "5.62.41.145",
+        "5.62.41.157",
+        "5.62.41.169",
+        "5.62.41.181"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Ghana",
+      "city": "Accra",
+      "hostname": "gh.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.148",
+        "5.62.62.144"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Gibraltar",
+      "city": "Catalan",
+      "hostname": "gi.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.152",
+        "5.62.62.148"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Greece",
+      "city": "Patras",
+      "hostname": "gr.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.156",
+        "5.62.62.152"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Greenland",
+      "city": "Ilulissat",
+      "hostname": "gl.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.160",
+        "5.62.62.156"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Grenada",
+      "city": "Saint George",
+      "hostname": "gd.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.100",
+        "5.62.58.96"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Guadeloupe",
+      "city": "Le Gosier",
+      "hostname": "gp.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.104",
+        "5.62.58.100"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Guam",
+      "city": "Tamuning",
+      "hostname": "gu.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.108",
+        "5.62.60.164"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Guatemala",
+      "city": "Guatemala City",
+      "hostname": "gt.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.112",
+        "5.62.58.104"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Guinea",
+      "city": "Conakry",
+      "hostname": "gn.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.172",
+        "5.62.62.164"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Guinea-Bissau",
+      "city": "Bissau",
+      "hostname": "gw.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.168",
+        "5.62.62.160"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Guyana",
+      "city": "Barima-Waini",
+      "hostname": "gy.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.116",
+        "5.62.58.108"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Haiti",
+      "city": "Cap-Haitien",
+      "hostname": "ht.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.120",
+        "5.62.58.112"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Honduras",
+      "city": "Tegucigalpa",
+      "hostname": "hn.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.124",
+        "5.62.58.116"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Hungary",
+      "city": "Budapest",
+      "hostname": "hu.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "37.120.144.78",
+        "185.189.114.62",
+        "185.252.223.62"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Iceland",
+      "city": "Reykjavik",
+      "hostname": "is.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "82.221.112.243",
+        "82.221.112.244"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "India",
+      "region": "Maharashtra",
+      "city": "Mumbai",
+      "hostname": "in.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.41.121",
+        "5.62.41.133",
+        "5.62.41.145",
+        "84.17.46.158",
+        "84.17.46.206",
+        "84.17.46.251",
+        "185.246.210.178",
+        "212.102.38.173"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Indonesia",
+      "city": "Jakarta",
+      "hostname": "id.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.41.133",
+        "5.62.41.145",
+        "5.62.41.157",
+        "5.62.41.169",
+        "84.17.46.134",
+        "84.17.46.158",
+        "84.17.46.182",
+        "84.17.46.251",
+        "185.246.210.130",
+        "185.246.210.146",
+        "185.246.210.178",
+        "185.246.210.194"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Iran",
+      "city": "Isfahan",
+      "hostname": "ir.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.176",
+        "5.62.62.168"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Iraq",
+      "city": "Baghdad",
+      "hostname": "iq.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.180",
+        "5.62.62.172"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Ireland",
+      "city": "Dublin",
+      "hostname": "ie.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "78.153.199.5",
+        "78.153.199.29",
+        "78.153.199.243",
+        "81.17.242.165",
+        "146.70.48.78",
+        "146.70.48.94"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Israel",
+      "city": "Petah Tikva",
+      "hostname": "il.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "185.185.132.62",
+        "185.185.132.110",
+        "185.185.133.78",
+        "185.185.133.190"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Italy",
+      "region": "Pordenone",
+      "city": "Porcia",
+      "hostname": "it.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "45.87.184.15",
+        "45.87.184.31",
+        "45.87.184.79",
+        "45.87.184.95",
+        "84.17.58.168",
+        "84.17.58.213",
+        "84.17.59.45",
+        "84.17.59.59"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Jamaica",
+      "city": "Montego Bay",
+      "hostname": "jm.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.128",
+        "5.62.58.120"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Japan",
+      "city": "Tokyo",
+      "hostname": "jp.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "156.146.35.162",
+        "156.146.35.184",
+        "156.146.35.185",
+        "212.102.51.235"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Jordan",
+      "city": "Amman",
+      "hostname": "jo.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.188",
+        "5.62.62.180"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Kazakhstan",
+      "city": "Shymkent",
+      "hostname": "kz.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.192",
+        "5.62.62.184"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Kenya",
+      "city": "Nairobi",
+      "hostname": "ke.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.196",
+        "5.62.62.188"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Kiribati",
+      "city": "Umwa Village",
+      "hostname": "ki.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.132",
+        "5.62.58.124"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Kuwait",
+      "city": "Kuwait City",
+      "hostname": "kw.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.200",
+        "5.62.62.192"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Kyrgyzstan",
+      "city": "Bishkek",
+      "hostname": "kg.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.204",
+        "5.62.62.196"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Laos",
+      "city": "Thakhek",
+      "hostname": "la.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.208",
+        "5.62.62.200"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Latvia",
+      "city": "Riga",
+      "hostname": "lv.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.212",
+        "5.62.62.204"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Lebanon",
+      "city": "Beirut",
+      "hostname": "lb.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.216",
+        "5.62.62.208"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Lesotho",
+      "city": "Peka",
+      "hostname": "ls.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.220",
+        "5.62.62.212"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Liberia",
+      "city": "Monrovia",
+      "hostname": "lr.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.224",
+        "5.62.62.216"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Libya",
+      "city": "Ghadames",
+      "hostname": "ly.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.228",
+        "5.62.62.220"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Liechtenstein",
+      "city": "Vaduz",
+      "hostname": "li.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.232",
+        "5.62.62.224"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Lithuania",
+      "city": "Siauliai",
+      "hostname": "lt.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.236",
+        "5.62.62.228"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Luxembourg",
+      "hostname": "lu.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "92.38.162.123",
+        "92.38.162.148",
+        "92.38.162.151",
+        "92.38.172.25"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Macau",
+      "city": "Macau",
+      "hostname": "mo.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.240",
+        "5.62.62.232"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Macedonia",
+      "city": "Skopje",
+      "hostname": "mk.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.244",
+        "5.62.62.236"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Madagascar",
+      "city": "Antsiranana",
+      "hostname": "mg.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.248",
+        "5.62.62.240"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Malawi",
+      "city": "Lilongwe",
+      "hostname": "mw.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.60.252",
+        "5.62.62.244"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Malaysia",
+      "city": "Kuala Lumpur",
+      "hostname": "my.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.41.157",
+        "84.17.46.134",
+        "84.17.46.206",
+        "84.17.46.251",
+        "185.246.210.178"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Maldives",
+      "city": "Male",
+      "hostname": "mv.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.0",
+        "5.62.62.248"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Mali",
+      "city": "Bamako",
+      "hostname": "ml.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.4",
+        "5.62.62.252"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Malta",
+      "city": "Cospicua",
+      "hostname": "mt.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.8",
+        "5.62.63.0"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Mauritius",
+      "city": "Port Louis",
+      "hostname": "mu.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.16",
+        "5.62.63.8"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Mexico",
+      "region": "Sinaloa",
+      "city": "Mazatlan",
+      "hostname": "mx.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "31.14.72.16",
+        "31.14.72.23",
+        "31.14.72.30",
+        "31.14.72.44",
+        "31.14.72.51"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Moldova",
+      "city": "Chisinau",
+      "hostname": "md.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.20",
+        "5.62.63.12"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Monaco",
+      "city": "Monaco",
+      "hostname": "mc.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.24",
+        "5.62.63.16"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Mongolia",
+      "city": "Suhbaatar",
+      "hostname": "mn.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.28",
+        "5.62.63.20"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Montenegro",
+      "city": "Becici",
+      "hostname": "me.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.32",
+        "5.62.63.24"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Montserrat",
+      "city": "Plymouth",
+      "hostname": "ms.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.136",
+        "5.62.58.128"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Morocco",
+      "city": "Fes",
+      "hostname": "ma.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.36",
+        "5.62.63.28"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Mozambique",
+      "city": "Pemba",
+      "hostname": "mz.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.40",
+        "5.62.63.32"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Myanmar",
+      "city": "Yangon",
+      "hostname": "mm.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.44",
+        "5.62.63.36"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Namibia",
+      "city": "Windhoek",
+      "hostname": "na.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.48",
+        "5.62.63.40"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Nauru",
+      "city": "Anabar",
+      "hostname": "nr.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.140",
+        "5.62.58.132"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Nepal",
+      "city": "Janakpur",
+      "hostname": "np.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.52",
+        "5.62.63.44"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Netherlands",
+      "city": "Amsterdam",
+      "hostname": "nl.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "84.17.46.134",
+        "84.17.46.158",
+        "84.17.46.182",
+        "84.17.46.206"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "New Caledonia",
+      "city": "Noumea",
+      "hostname": "nc.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.144",
+        "5.62.58.136"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "New Zealand",
+      "city": "Auckland",
+      "hostname": "nz.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "103.76.164.3",
+        "103.76.164.19",
+        "103.108.94.243",
+        "103.231.91.131"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Nicaragua",
+      "city": "Managua",
+      "hostname": "ni.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.148",
+        "5.62.58.140"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Niger",
+      "city": "Niamey",
+      "hostname": "ne.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.56",
+        "5.62.63.48"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Nigeria",
+      "city": "Lagos",
+      "hostname": "ng.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.60",
+        "5.62.63.52"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Niue",
+      "city": "Alofi",
+      "hostname": "nu.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.152",
+        "5.62.58.144"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Norfolk Island",
+      "city": "Kingston",
+      "hostname": "nf.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.156",
+        "5.62.58.148"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "North Korea",
+      "city": "Manpo",
+      "hostname": "kp.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.160",
+        "5.62.61.64"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Norway",
+      "city": "Oslo",
+      "hostname": "no.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "185.101.32.48",
+        "217.170.201.254",
+        "217.170.203.128",
+        "217.170.204.160",
+        "217.170.204.223",
+        "217.170.206.31"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Oman",
+      "city": "Salalah",
+      "hostname": "om.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.68",
+        "5.62.63.56"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Pakistan",
+      "city": "Karachi",
+      "hostname": "pk.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.72",
+        "5.62.63.60"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Palau",
+      "city": "Melekeok",
+      "hostname": "pw.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.164",
+        "5.62.61.76"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Palestine",
+      "city": "Bethlehem",
+      "hostname": "ps.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.80",
+        "5.62.63.64"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Panama",
+      "city": "Panama City",
+      "hostname": "pa.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.168",
+        "5.62.58.152"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Papua New Guinea",
+      "city": "Alotau",
+      "hostname": "pg.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.172",
+        "5.62.61.84"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Paraguay",
+      "city": "Boqueron",
+      "hostname": "py.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.176",
+        "5.62.58.156"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Peru",
+      "city": "Cusco",
+      "hostname": "pe.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.180",
+        "5.62.58.160"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Philippines",
+      "city": "Baguio",
+      "hostname": "ph.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.184",
+        "5.62.61.88"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Pitcairn Islands",
+      "city": "Adamstown",
+      "hostname": "pn.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.188",
+        "5.62.58.164"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Poland",
+      "city": "Warsaw",
+      "hostname": "pl.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "84.17.55.26",
+        "185.246.208.34",
+        "185.246.208.130",
+        "185.246.208.157"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Portugal",
+      "city": "Leiria",
+      "hostname": "pt.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "91.250.240.113",
+        "91.250.240.193",
+        "194.39.126.135"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Puerto Rico",
+      "city": "San Juan",
+      "hostname": "pr.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.192",
+        "5.62.58.168"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Qatar",
+      "city": "Doha",
+      "hostname": "qa.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.92",
+        "5.62.63.68"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Republicof Djibouti",
+      "city": "Djibouti",
+      "hostname": "dj.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.96",
+        "5.62.63.72"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Republicof Singapore",
+      "city": "Singapore",
+      "hostname": "sg.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "92.223.85.20",
+        "92.223.85.75",
+        "92.223.85.77",
+        "92.223.85.106",
+        "92.223.85.113",
+        "92.223.86.8",
+        "92.223.86.46"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Republicofthe Congo",
+      "city": "Brazzaville",
+      "hostname": "cg.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.100",
+        "5.62.63.76"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Romania",
+      "city": "Bucharest",
+      "hostname": "ro.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.104",
+        "5.62.63.80"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Russia",
+      "city": "Moscow",
+      "hostname": "ru.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.19.47",
+        "5.62.19.55",
+        "5.62.19.63"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Rwanda",
+      "city": "Kigali",
+      "hostname": "rw.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.108",
+        "5.62.63.84"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Saint Helena",
+      "city": "Tristan Da Cunha",
+      "hostname": "sh.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.112",
+        "5.62.63.88"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Saint Kittsand Nevis",
+      "city": "Basseterre",
+      "hostname": "kn.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.196",
+        "5.62.58.172"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Saint Lucia",
+      "city": "Gros Islet",
+      "hostname": "lc.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.200",
+        "5.62.58.176"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Saint Pierreand Miquelon",
+      "city": "Saint-Pierre",
+      "hostname": "pm.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.58.180",
+        "5.62.63.92"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Saint Vincentandthe Grenadines",
+      "city": "Kingstown",
+      "hostname": "vc.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.204",
+        "5.62.58.184"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Samoa",
+      "city": "Matatufu",
+      "hostname": "ws.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.208",
+        "5.62.58.188"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "San Marino",
+      "city": "San Marino",
+      "hostname": "sm.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.116",
+        "5.62.63.96"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Sao Tomeand Principe",
+      "city": "Sao Tome",
+      "hostname": "st.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.120",
+        "5.62.63.100"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Saudi Arabia",
+      "city": "Riyadh",
+      "hostname": "sa.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.124",
+        "5.62.63.104"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Senegal",
+      "city": "Dakar",
+      "hostname": "sn.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.128",
+        "5.62.63.108"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Serbia",
+      "city": "Belgrade",
+      "hostname": "rs.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.132",
+        "5.62.63.112"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Slovakia",
+      "city": "Bratislava",
+      "hostname": "sk.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.140",
+        "5.62.63.120"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Slovenia",
+      "city": "Vrhnika",
+      "hostname": "si.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.144",
+        "5.62.63.124"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Solomon Islands",
+      "city": "Honiara",
+      "hostname": "sb.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.212",
+        "5.62.58.192"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Somalia",
+      "city": "Afgooye",
+      "hostname": "so.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.148",
+        "5.62.63.128"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "South Africa",
+      "city": "Johannesburg",
+      "hostname": "za.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "102.165.47.160",
+        "102.165.47.176",
+        "154.70.155.144"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "South Korea",
+      "city": "Seoul",
+      "hostname": "kr.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "185.54.229.41",
+        "185.54.229.57",
+        "185.54.229.73"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Spain",
+      "city": "Alicante",
+      "hostname": "es.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "82.102.17.126",
+        "89.38.226.238",
+        "217.138.218.126"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Sri Lanka",
+      "city": "Moratuwa",
+      "hostname": "lk.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.152",
+        "5.62.63.132"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Sudan",
+      "city": "Khartoum",
+      "hostname": "sd.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.156",
+        "5.62.63.136"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Suriname",
+      "city": "Paramaribo",
+      "hostname": "sr.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.216",
+        "5.62.58.196"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Svalbardand Jan Mayen",
+      "city": "Longyearbyen",
+      "hostname": "sj.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.160",
+        "5.62.63.140"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Swaziland",
+      "city": "Manzini",
+      "hostname": "sz.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.220",
+        "5.62.58.200"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Sweden",
+      "region": "Stockholm",
+      "city": "Nacka",
+      "hostname": "se.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "31.3.152.118",
+        "31.3.152.170",
+        "31.3.153.140",
+        "37.46.121.240",
+        "128.127.105.164"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Switzerland",
+      "city": "Zurich",
+      "hostname": "ch.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "84.17.52.141",
+        "84.17.52.154",
+        "84.17.52.167",
+        "84.17.52.180",
+        "84.17.52.240",
+        "89.187.165.179"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Syria",
+      "city": "Ad Darah",
+      "hostname": "sy.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.164",
+        "5.62.63.144"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Taiwan",
+      "city": "Taipei",
+      "hostname": "tw.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.41.121",
+        "5.62.41.133",
+        "5.62.41.145",
+        "5.62.41.157",
+        "5.62.41.169",
+        "5.62.41.181",
+        "84.17.46.182",
+        "185.246.210.130",
+        "185.246.210.146",
+        "185.246.210.178",
+        "185.246.210.194"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Tajikistan",
+      "city": "Dushanbe",
+      "hostname": "tj.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.168",
+        "5.62.63.148"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Tanzania",
+      "city": "Arusha",
+      "hostname": "tz.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.172",
+        "5.62.63.152"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Thailand",
+      "city": "Bangkok",
+      "hostname": "th.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.176",
+        "5.62.63.156"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Togo",
+      "city": "Lome",
+      "hostname": "tg.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.180",
+        "5.62.63.160"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Tokelau",
+      "city": "Atafu",
+      "hostname": "tk.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.224",
+        "5.62.58.204"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Tonga",
+      "city": "Nukualofa",
+      "hostname": "to.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.228",
+        "5.62.58.208"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Trinidadand Tobago",
+      "city": "San Fernando",
+      "hostname": "tt.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.232",
+        "5.62.58.212"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Tunisia",
+      "city": "Mahdia",
+      "hostname": "tn.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.184",
+        "5.62.63.164"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Turkey",
+      "city": "Istanbul",
+      "hostname": "tr.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "92.38.180.63",
+        "92.38.180.76",
+        "92.38.180.86"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Turkmenistan",
+      "city": "Ashgabat",
+      "hostname": "tm.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.188",
+        "5.62.63.168"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Turksand Caicos Islands",
+      "city": "Balfour Town",
+      "hostname": "tc.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.236",
+        "5.62.58.216"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Tuvalu",
+      "city": "Vaitupu",
+      "hostname": "tv.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.240",
+        "5.62.58.220"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "UK",
+      "hostname": "gb.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "62.128.207.110",
+        "62.128.217.85",
+        "62.128.217.112",
+        "80.75.64.66",
+        "87.117.225.146",
+        "87.117.225.160",
+        "87.117.225.174",
+        "109.169.34.42",
+        "109.169.34.62"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "UK",
+      "city": "London",
+      "hostname": "london.gb.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.43.202",
+        "5.62.43.218",
+        "5.62.43.229",
+        "77.234.43.130",
+        "77.234.43.166",
+        "77.234.43.175",
+        "77.234.43.185"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "UK",
+      "region": "Scotland",
+      "city": "Glasgow",
+      "hostname": "scotland.gb.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "62.128.207.110",
+        "62.128.217.85",
+        "62.128.217.112",
+        "87.117.225.146",
+        "87.117.225.160",
+        "109.169.34.23",
+        "109.169.34.62"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "hostname": "us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.84",
+        "5.62.59.64"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Alabama",
+      "city": "Montgomery",
+      "hostname": "al.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "95.142.127.16",
+        "95.142.127.25"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Alaska",
+      "city": "Anchorage",
+      "hostname": "ak.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.252",
+        "5.62.58.232"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Arizona",
+      "city": "Phoenix",
+      "hostname": "az.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "23.83.130.34",
+        "23.83.131.211",
+        "23.83.131.215",
+        "23.83.132.155",
+        "23.83.132.176",
+        "23.83.185.20"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Arkansas",
+      "city": "Magnolia",
+      "hostname": "ar.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.0",
+        "5.62.58.236"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "California",
+      "city": "Los Angeles",
+      "hostname": "ca.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "67.201.33.54",
+        "107.181.178.97",
+        "143.244.51.66",
+        "162.253.68.177",
+        "162.253.68.209",
+        "162.253.68.241",
+        "192.252.220.49"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Connecticut",
+      "city": "Trumbull",
+      "hostname": "ct.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.16.16",
+        "5.62.16.25"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Delaware",
+      "city": "Wilmington",
+      "hostname": "de.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.4",
+        "5.62.58.240"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Florida",
+      "city": "Miami",
+      "hostname": "fl.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "171.22.76.15",
+        "171.22.76.47",
+        "171.22.76.63",
+        "171.22.76.79",
+        "171.22.76.95"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Georgia",
+      "city": "Atlanta",
+      "hostname": "ga.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.24.15",
+        "5.62.24.31",
+        "5.62.24.46",
+        "5.62.24.61",
+        "66.115.181.161",
+        "66.115.181.209",
+        "66.115.181.225"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Hawaii",
+      "city": "Honolulu",
+      "hostname": "hi.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "131.100.2.51",
+        "131.100.2.99",
+        "131.100.2.121",
+        "131.100.2.222"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Idaho",
+      "city": "Idaho Falls",
+      "hostname": "id.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.12",
+        "5.62.58.248"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Illinois",
+      "city": "Chicago",
+      "hostname": "il.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "154.16.241.255",
+        "181.214.58.176",
+        "181.214.61.48",
+        "181.214.61.64",
+        "181.214.99.159",
+        "181.214.102.159",
+        "181.214.107.31",
+        "181.214.107.47",
+        "181.214.107.63",
+        "181.215.127.240",
+        "191.101.170.30"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Indiana",
+      "city": "South Bend",
+      "hostname": "in.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "198.134.108.67",
+        "198.134.109.131"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Iowa",
+      "city": "Des Moines",
+      "hostname": "ia.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.104",
+        "5.62.59.84"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Kansas",
+      "city": "Wichita",
+      "hostname": "ks.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.16",
+        "5.62.58.252"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Kentucky",
+      "city": "Louisville",
+      "hostname": "ky.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.20",
+        "5.62.59.0"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Louisiana",
+      "city": "New Orleans",
+      "hostname": "la.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.24",
+        "5.62.59.4"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Maine",
+      "city": "Bath",
+      "hostname": "me.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.28",
+        "5.62.59.8"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Maryland",
+      "city": "Baltimore",
+      "hostname": "md.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.32",
+        "5.62.59.12"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Massachusetts",
+      "city": "Boston",
+      "hostname": "ma.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "38.146.55.35",
+        "38.146.55.115",
+        "38.146.57.205",
+        "38.146.57.253",
+        "38.242.7.243",
+        "154.3.129.61",
+        "154.3.222.163"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Michigan",
+      "city": "Lansing",
+      "hostname": "mi.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.36",
+        "5.62.59.16"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Minnesota",
+      "city": "Saint Paul",
+      "hostname": "mn.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.108",
+        "5.62.59.88"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Mississippi",
+      "city": "Louisville",
+      "hostname": "ms.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.40",
+        "5.62.59.20"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Missouri",
+      "city": "Kansas City",
+      "hostname": "mo.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "209.239.115.164",
+        "209.239.115.186"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Montana",
+      "city": "Billings",
+      "hostname": "mt.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.116",
+        "5.62.59.92"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Nebraska",
+      "city": "Omaha",
+      "hostname": "ne.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.44",
+        "5.62.59.24"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Nevada",
+      "city": "Las Vegas",
+      "hostname": "nv.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "76.164.200.114",
+        "76.164.202.190",
+        "76.164.205.194",
+        "76.164.224.211",
+        "76.164.225.75"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "New Hampshire",
+      "city": "Bedford",
+      "hostname": "nh.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.48",
+        "5.62.59.28"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "New York",
+      "city": "Manhattan",
+      "hostname": "ny.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "156.146.36.103",
+        "156.146.36.116",
+        "212.102.33.50",
+        "212.102.33.77",
+        "212.102.33.90",
+        "212.102.33.176",
+        "212.102.33.192",
+        "212.102.33.208",
+        "212.102.33.224",
+        "212.102.33.251"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "North Carolina",
+      "city": "Asheville",
+      "hostname": "nc.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "104.247.208.78",
+        "104.247.208.94",
+        "104.247.208.110",
+        "104.247.208.126",
+        "104.247.208.142",
+        "104.247.208.158",
+        "104.247.208.174"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "North Dakota",
+      "city": "Grand Forks",
+      "hostname": "nd.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.60",
+        "5.62.59.40"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Ohio",
+      "city": "Columbus",
+      "hostname": "oh.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "199.114.218.99",
+        "199.114.218.115"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Oklahoma",
+      "city": "Oklahoma City",
+      "hostname": "ok.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "216.107.129.115",
+        "216.107.129.131"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Pennsylvania",
+      "city": "Wilkes-Barre",
+      "hostname": "pa.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.64",
+        "5.62.59.44"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Rhode Island",
+      "city": "Providence",
+      "hostname": "ri.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.68",
+        "5.62.59.48"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "South Carolina",
+      "city": "Columbia",
+      "hostname": "sc.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.72",
+        "5.62.59.52"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "South Dakota",
+      "city": "Sioux Falls",
+      "hostname": "sd.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.76",
+        "5.62.59.56"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Tennessee",
+      "city": "Nashville",
+      "hostname": "tn.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.80",
+        "5.62.59.60"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Texas",
+      "city": "Dallas",
+      "hostname": "tx.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "89.187.164.144",
+        "89.187.164.176",
+        "156.146.38.154",
+        "212.102.40.13",
+        "212.102.40.141",
+        "212.102.40.154"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Utah",
+      "city": "Salt Lake City",
+      "hostname": "ut.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "69.36.169.129",
+        "199.189.106.235",
+        "199.189.106.239",
+        "199.189.106.245",
+        "199.189.106.251",
+        "209.95.34.73",
+        "209.95.56.199"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Vermont",
+      "city": "Rutland",
+      "hostname": "vt.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.84",
+        "5.62.59.64"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Virginia",
+      "city": "Ashburn",
+      "hostname": "va.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "198.98.183.37",
+        "198.98.183.133",
+        "198.98.183.152"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Washington",
+      "city": "Seattle",
+      "hostname": "wa.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "66.115.149.65",
+        "66.115.149.81",
+        "66.115.149.97",
+        "172.98.86.150",
+        "199.187.211.46",
+        "199.187.211.92",
+        "199.187.211.142",
+        "199.187.211.157",
+        "199.187.211.232",
+        "199.187.211.247",
+        "199.229.250.241"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "West Virginia",
+      "city": "Philippi",
+      "hostname": "wv.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.88",
+        "5.62.59.68"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Wisconsin",
+      "city": "Madison",
+      "hostname": "wi.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "204.15.110.131",
+        "204.15.110.163"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "USA",
+      "region": "Wyoming",
+      "city": "Cheyenne",
+      "hostname": "wy.us.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.92",
+        "5.62.59.72"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Uganda",
+      "city": "Kampala",
+      "hostname": "ug.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.192",
+        "5.62.63.172"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Ukraine",
+      "city": "Odessa",
+      "hostname": "ua.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "143.244.45.141",
+        "143.244.45.154"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United Arab Emirates",
+      "city": "Dubai",
+      "hostname": "ae.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.200",
+        "5.62.63.188"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Uruguay",
+      "city": "Montevideo",
+      "hostname": "uy.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.56.244",
+        "5.62.58.224"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Uzbekistan",
+      "city": "Samarkand",
+      "hostname": "uz.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.204",
+        "5.62.63.192"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Vanuatu",
+      "city": "Loltong",
+      "hostname": "vu.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.96",
+        "5.62.59.76"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Vatican",
+      "city": "Vatican City",
+      "hostname": "va.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.208",
+        "5.62.63.196"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Venezuela",
+      "city": "Caracas",
+      "hostname": "ve.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.57.100",
+        "5.62.59.80"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Vietnam",
+      "city": "Ho Chi Minh City",
+      "hostname": "vn.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.212",
+        "5.62.63.200"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Yemen",
+      "city": "Sanaa",
+      "hostname": "ye.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.216",
+        "5.62.63.204"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Zambia",
+      "city": "Lusaka",
+      "hostname": "zm.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.220",
+        "5.62.63.208"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Zimbabwe",
+      "city": "Harare",
+      "hostname": "zw.hma.rocks",
+      "tcp": true,
+      "udp": true,
+      "ips": [
+        "5.62.61.224",
+        "5.62.63.212"
+      ]
+    }
+  ]
+}
