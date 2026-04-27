@@ -7,6 +7,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/models"
+	"github.com/qdm12/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -27,10 +28,15 @@ func populateProviderToVersion(providerToVersion map[string]uint16) map[string]u
 func Test_extractServersFromBytes(t *testing.T) {
 	t.Parallel()
 
+	type logLine struct {
+		level   log.Level
+		message string
+	}
+
 	testCases := map[string]struct {
 		b                 []byte
 		hardcodedVersions map[string]uint16
-		logged            []string
+		logged            []logLine
 		persisted         models.AllServers
 		errMessage        string
 	}{
@@ -42,7 +48,9 @@ func Test_extractServersFromBytes(t *testing.T) {
 			b:                 []byte(`{"cyberghost": "garbage"}`),
 			hardcodedVersions: populateProviderToVersion(map[string]uint16{}),
 			errMessage: "decoding servers version for provider Cyberghost: " +
-				"json: cannot unmarshal string into Go value of type struct { Version uint16 \"json:\\\"version\\\"\" }",
+				"json: cannot unmarshal string into Go value of type struct { Version uint16 \"json:\\\"version\\\"\"; " +
+				"Timestamp int64 \"json:\\\"timestamp\\\"\"; " +
+				"Filepath string \"json:\\\"filepath\\\"\" }",
 		},
 		"bad servers array JSON": {
 			b: []byte(`{"cyberghost": {"version": 1, "servers": "garbage"}}`),
@@ -81,12 +89,29 @@ func Test_extractServersFromBytes(t *testing.T) {
 			hardcodedVersions: populateProviderToVersion(map[string]uint16{
 				providers.Cyberghost: 2,
 			}),
-			logged: []string{
-				"Cyberghost servers from file discarded because they have version 1 and hardcoded servers have version 2",
+			logged: []logLine{
+				{level: log.LevelInfo, message: "Cyberghost servers from file discarded because they have version 1" +
+					" and hardcoded servers have version 2"},
 			},
 			persisted: models.AllServers{
 				ProviderToServers: map[string]models.Servers{},
 			},
+		},
+		"preferred_different_versions": {
+			b: []byte(`{
+				"cyberghost": {"version": 1, "timestamp": 1, "preferred": true}
+			}`),
+			hardcodedVersions: populateProviderToVersion(map[string]uint16{
+				providers.Cyberghost: 2,
+			}),
+			logged: []logLine{
+				{level: log.LevelWarn, message: "Cyberghost preferred servers from file discarded because they have version 1" +
+					" and hardcoded servers have version 2"},
+			},
+			persisted: models.AllServers{
+				ProviderToServers: map[string]models.Servers{},
+			},
+			errMessage: "",
 		},
 	}
 
@@ -98,7 +123,15 @@ func Test_extractServersFromBytes(t *testing.T) {
 			logger := NewMockLogger(ctrl)
 			var previousLogCall *gomock.Call
 			for _, logged := range testCase.logged {
-				call := logger.EXPECT().Info(logged)
+				var call *gomock.Call
+				switch logged.level { //nolint:exhaustive
+				case log.LevelInfo:
+					call = logger.EXPECT().Info(logged.message)
+				case log.LevelWarn:
+					call = logger.EXPECT().Warn(logged.message)
+				default:
+					t.Fatalf("invalid log level %d in test case", logged.level)
+				}
 				if previousLogCall != nil {
 					call.After(previousLogCall)
 				}

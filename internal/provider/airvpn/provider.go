@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
-	"github.com/qdm12/gluetun/internal/provider/airvpn/updater"
 	"github.com/qdm12/gluetun/internal/provider/common"
+	"github.com/qdm12/gluetun/pkg/updaters/airvpn"
 )
 
 type Provider struct {
@@ -21,7 +21,7 @@ func New(storage common.Storage, randSource rand.Source,
 	return &Provider{
 		storage:    storage,
 		randSource: randSource,
-		Fetcher:    updater.New(client),
+		Fetcher:    airvpn.New(client),
 	}
 }
 

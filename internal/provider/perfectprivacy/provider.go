@@ -5,7 +5,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/qdm12/gluetun/internal/provider/common"
-	"github.com/qdm12/gluetun/internal/provider/perfectprivacy/updater"
+	"github.com/qdm12/gluetun/pkg/updaters/perfectprivacy"
 )
 
 type Provider struct {
@@ -20,7 +20,7 @@ func New(storage common.Storage, randSource rand.Source,
 	return &Provider{
 		storage:    storage,
 		randSource: randSource,
-		Fetcher:    updater.New(unzipper, updaterWarner),
+		Fetcher:    perfectprivacy.New(unzipper, updaterWarner),
 	}
 }
 

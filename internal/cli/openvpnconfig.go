@@ -9,12 +9,10 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/provider"
-	"github.com/qdm12/gluetun/internal/storage"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gosettings/reader"
 )
@@ -49,9 +47,9 @@ type IPv6Checker interface {
 func (c *CLI) OpenvpnConfig(logger OpenvpnConfigLogger, reader *reader.Reader,
 	ipv6Checker IPv6Checker,
 ) error {
-	storage, err := storage.New(logger, constants.ServersData)
+	storage, err := setupStorage(newNoopLogger())
 	if err != nil {
-		return err
+		return fmt.Errorf("setting up storage: %w", err)
 	}
 
 	var allSettings settings.Settings

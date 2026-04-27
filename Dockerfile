@@ -273,7 +273,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     PUBLICIP_API=ipinfo,ifconfigco,ip2location,cloudflare \
     PUBLICIP_API_TOKEN= \
     # Storage
-    STORAGE_FILEPATH=/gluetun/servers.json \
+    STORAGE_SERVERS_DIRECTORY_PATH=/gluetun/servers/ \
     # Pprof
     PPROF_ENABLED=no \
     PPROF_BLOCK_PROFILE_RATE=0 \

@@ -12,29 +12,30 @@ import (
 	"golang.org/x/text/language"
 )
 
-// readFromFile reads the servers from server.json.
+// readFromFile reads the servers data starting from the given manifest file path.
 // It only reads servers that have the same version as the hardcoded servers version
 // to avoid JSON decoding errors.
-func (s *Storage) readFromFile(filepath string, hardcodedVersions map[string]uint16) (
-	servers models.AllServers, err error,
+func (s *Storage) readFromFile(manifestPath string, hardcodedVersions map[string]uint16) (
+	servers models.AllServers, found bool, err error,
 ) {
-	file, err := os.Open(filepath)
+	file, err := os.Open(manifestPath)
 	if os.IsNotExist(err) {
-		return servers, nil
+		return servers, false, nil
 	} else if err != nil {
-		return servers, err
+		return servers, false, err
 	}
 
 	b, err := io.ReadAll(file)
 	if err != nil {
-		return servers, err
+		return servers, true, err
 	}
 
 	if err := file.Close(); err != nil {
-		return servers, err
+		return servers, true, err
 	}
 
-	return s.extractServersFromBytes(b, hardcodedVersions)
+	servers, err = s.extractServersFromBytes(b, hardcodedVersions)
+	return servers, true, err
 }
 
 func (s *Storage) extractServersFromBytes(b []byte, hardcodedVersions map[string]uint16) (
@@ -46,6 +47,12 @@ func (s *Storage) extractServersFromBytes(b []byte, hardcodedVersions map[string
 	}
 
 	// Note schema version is at map key "version" as number
+	if rawVersion, ok := rawMessages["version"]; ok {
+		err := json.Unmarshal(rawVersion, &servers.Version)
+		if err != nil {
+			return servers, fmt.Errorf("decoding servers schema version: %w", err)
+		}
+	}
 
 	allProviders := providers.All()
 	servers.ProviderToServers = make(map[string]models.Servers, len(allProviders))
@@ -86,25 +93,51 @@ func (s *Storage) readServers(provider string, hardcodedVersion uint16,
 ) {
 	provider = titleCaser.String(provider)
 
-	var versionObject struct {
-		Version uint16 `json:"version"`
+	var metadata struct {
+		Version   uint16 `json:"version"`
+		Timestamp int64  `json:"timestamp"`
+		Filepath  string `json:"filepath"`
 	}
 
-	err = json.Unmarshal(rawMessage, &versionObject)
+	err = json.Unmarshal(rawMessage, &metadata)
 	if err != nil {
 		return servers, false, fmt.Errorf("decoding servers version for provider %s: %w",
 			provider, err)
 	}
 
-	persistedVersion := versionObject.Version
+	if metadata.Filepath != "" {
+		providerFile, err := os.Open(metadata.Filepath)
+		if os.IsNotExist(err) {
+			return models.Servers{}, false, nil
+		} else if err != nil {
+			return models.Servers{}, false, fmt.Errorf("opening servers file %s for provider %s: %w",
+				metadata.Filepath, provider, err)
+		}
+		defer providerFile.Close()
 
-	versionsMatch = hardcodedVersion == persistedVersion
-	if !versionsMatch {
-		s.logger.Info(fmt.Sprintf(
-			"%s servers from file discarded because they have "+
-				"version %d and hardcoded servers have version %d",
-			provider, persistedVersion, hardcodedVersion))
-		return servers, versionsMatch, nil
+		var referencedServers models.Servers
+		err = json.NewDecoder(providerFile).Decode(&referencedServers)
+		if err != nil {
+			return models.Servers{}, false, fmt.Errorf("decoding servers file %s for provider %s: %w",
+				metadata.Filepath, provider, err)
+		}
+
+		versionsMatch = referencedServers.Version == hardcodedVersion
+		if !versionsMatch {
+			if referencedServers.Preferred {
+				s.logger.Warn(fmt.Sprintf(
+					"%s preferred servers from file %s discarded because they have version %d and hardcoded servers have version %d",
+					provider, metadata.Filepath, referencedServers.Version, hardcodedVersion))
+			} else {
+				s.logger.Info(fmt.Sprintf(
+					"%s servers from file %s discarded because they have version %d and hardcoded servers have version %d",
+					provider, metadata.Filepath, referencedServers.Version, hardcodedVersion))
+			}
+			return models.Servers{}, false, nil
+		}
+
+		referencedServers.Filepath = metadata.Filepath
+		return referencedServers, true, nil
 	}
 
 	err = json.Unmarshal(rawMessage, &servers)
@@ -113,5 +146,19 @@ func (s *Storage) readServers(provider string, hardcodedVersion uint16,
 			provider, err)
 	}
 
-	return servers, versionsMatch, nil
+	versionsMatch = servers.Version == hardcodedVersion
+	if !versionsMatch {
+		if servers.Preferred {
+			s.logger.Warn(fmt.Sprintf(
+				"%s preferred servers from file discarded because they have version %d and hardcoded servers have version %d",
+				provider, servers.Version, hardcodedVersion))
+		} else {
+			s.logger.Info(fmt.Sprintf(
+				"%s servers from file discarded because they have version %d and hardcoded servers have version %d",
+				provider, servers.Version, hardcodedVersion))
+		}
+		return servers, false, nil
+	}
+
+	return servers, true, nil
 }

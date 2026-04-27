@@ -1,6 +1,6 @@
 package constants
 
 const (
-	// ServersData is the server information filepath.
-	ServersData = "/gluetun/servers.json"
+	// ServersDataLegacy is the old server information filepath.
+	ServersDataLegacy = "/gluetun/servers.json"
 )

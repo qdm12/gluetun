@@ -18,6 +18,7 @@ var (
 
 type Fetcher interface {
 	FetchServers(ctx context.Context, minServers int) (servers []models.Server, err error)
+	Version() uint16
 }
 
 type ParallelResolver interface {

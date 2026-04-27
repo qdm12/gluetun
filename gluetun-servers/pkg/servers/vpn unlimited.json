@@ -1,0 +1,944 @@
+{
+  "version": 1,
+  "timestamp": 1708534611,
+  "servers": [
+    {
+      "vpn": "openvpn",
+      "country": "Australia",
+      "city": "Sydney",
+      "hostname": "au-syd.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "45.79.239.47",
+        "139.99.130.220",
+        "139.99.131.38",
+        "170.64.132.24",
+        "170.64.132.105",
+        "170.64.132.155",
+        "170.64.132.164",
+        "170.64.132.166",
+        "170.64.132.168"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Austria",
+      "hostname": "at.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "50.7.115.19",
+        "95.164.36.217",
+        "95.164.36.221",
+        "95.164.36.222",
+        "95.164.36.223",
+        "176.120.65.51",
+        "176.120.65.52"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Belgium",
+      "hostname": "be.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "37.120.143.178"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Bosnia and Herzegovina",
+      "hostname": "ba.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "185.164.35.37"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Brazil",
+      "hostname": "br.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "216.238.105.38",
+        "216.238.111.125",
+        "216.238.116.106",
+        "216.238.117.122",
+        "216.238.117.129"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Bulgaria",
+      "hostname": "bg.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "77.91.100.3",
+        "77.91.100.61",
+        "77.91.100.173"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Canada",
+      "hostname": "ca.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "192.99.6.164",
+        "192.99.6.166",
+        "192.99.7.170",
+        "192.99.14.158",
+        "192.99.37.199"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Canada",
+      "city": "Toronto",
+      "hostname": "ca-tr.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "104.254.90.34",
+        "104.254.90.58",
+        "162.253.131.106",
+        "184.75.213.42",
+        "184.75.213.50",
+        "184.75.213.194",
+        "204.187.100.82"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Canada",
+      "city": "Vancouver",
+      "hostname": "ca-vn.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "162.221.202.17"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Costa Rica",
+      "hostname": "cr.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "145.14.131.24",
+        "145.14.131.50",
+        "145.14.131.59",
+        "145.14.131.81",
+        "145.14.131.173",
+        "145.14.131.176",
+        "145.14.131.187",
+        "145.14.131.194"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Croatia",
+      "hostname": "hr.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "85.10.51.3",
+        "85.10.56.3",
+        "85.10.56.4",
+        "85.10.56.100"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Cyprus",
+      "hostname": "cy.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "194.30.136.102",
+        "194.30.136.123"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Czech Republic",
+      "hostname": "cz.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "94.131.97.31",
+        "94.131.97.159",
+        "94.131.97.199",
+        "185.216.35.46"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Denmark",
+      "hostname": "dk.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "37.120.194.174",
+        "89.45.7.90",
+        "185.206.224.50"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Estonia",
+      "hostname": "ee.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "5.181.23.37",
+        "94.131.15.52",
+        "95.164.8.18"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Finland",
+      "hostname": "fi.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "45.159.249.138",
+        "45.159.249.162",
+        "45.159.249.205"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "France",
+      "hostname": "fr.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "51.159.99.123",
+        "62.210.38.83",
+        "62.210.132.5",
+        "62.210.132.12",
+        "62.210.188.244",
+        "62.210.204.161",
+        "62.210.206.27",
+        "62.210.207.15",
+        "195.154.166.20",
+        "195.154.169.66",
+        "195.154.199.175",
+        "195.154.204.36",
+        "195.154.221.54",
+        "195.154.222.168"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "France",
+      "city": "Roubaix",
+      "hostname": "fr-rbx.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "51.255.71.16",
+        "147.135.137.107",
+        "151.80.27.199"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Germany",
+      "city": "Düsseldorf",
+      "hostname": "de-dus.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "85.14.243.42",
+        "146.0.32.121",
+        "146.0.42.77"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Greece",
+      "hostname": "gr.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "94.131.8.45",
+        "94.131.8.47"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Hungary",
+      "hostname": "hu.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "5.182.38.132",
+        "5.182.38.193",
+        "77.91.72.105"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Iceland",
+      "hostname": "is.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "91.194.161.20",
+        "91.194.161.21",
+        "91.194.161.22"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "India",
+      "hostname": "in.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "162.218.95.14",
+        "198.145.227.50",
+        "198.145.227.51",
+        "198.145.227.52",
+        "198.145.227.53",
+        "198.145.227.54",
+        "198.145.227.55",
+        "198.145.227.56",
+        "198.145.227.57",
+        "198.145.227.58",
+        "198.145.227.59",
+        "198.145.227.60",
+        "198.145.227.61",
+        "198.145.227.62",
+        "198.145.227.63",
+        "198.145.227.64",
+        "198.145.227.65",
+        "198.145.227.66",
+        "198.145.227.67",
+        "198.145.227.68",
+        "198.145.227.69",
+        "198.145.227.70"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Ireland",
+      "city": "Dublin",
+      "hostname": "ie-dub.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "185.108.129.58",
+        "188.241.178.118",
+        "194.4.51.233",
+        "194.4.51.234",
+        "194.4.51.235"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Isle of Man",
+      "hostname": "im.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "37.235.55.14",
+        "37.235.55.45",
+        "37.235.55.57",
+        "37.235.55.62",
+        "37.235.55.68",
+        "37.235.55.240",
+        "192.71.211.15"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Israel",
+      "hostname": "il.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "91.225.218.142",
+        "91.225.218.143",
+        "91.225.218.144",
+        "193.182.144.23"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Italy",
+      "city": "Milan",
+      "hostname": "it-mil.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "91.193.5.50"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Japan",
+      "hostname": "jp.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "45.76.49.6",
+        "45.76.220.224",
+        "66.42.38.10",
+        "85.208.110.122",
+        "107.191.60.241",
+        "108.160.139.177",
+        "139.162.125.238",
+        "139.180.197.252",
+        "139.180.206.179"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Korea",
+      "hostname": "kr.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "141.164.34.194",
+        "141.164.39.45",
+        "158.247.213.101"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Kuala Lumpur",
+      "hostname": "mys.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "111.90.141.34"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Lithuania",
+      "hostname": "lt.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "94.131.14.222",
+        "94.131.14.223",
+        "94.131.14.224",
+        "94.131.14.225",
+        "94.131.14.226"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Mexico",
+      "hostname": "mx.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "216.238.66.6",
+        "216.238.66.40",
+        "216.238.69.229",
+        "216.238.72.203",
+        "216.238.73.64",
+        "216.238.73.252",
+        "216.238.75.254",
+        "216.238.76.115",
+        "216.238.77.95",
+        "216.238.78.81",
+        "216.238.79.163",
+        "216.238.79.200",
+        "216.238.80.169",
+        "216.238.81.55",
+        "216.238.82.61",
+        "216.238.83.73"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Moldova",
+      "hostname": "md.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "45.67.229.191",
+        "45.67.229.240"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Netherlands",
+      "hostname": "nl.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "45.32.236.232",
+        "50.7.176.51",
+        "50.7.176.116",
+        "82.196.12.12",
+        "95.85.21.9",
+        "95.85.21.11",
+        "95.85.21.12",
+        "95.85.21.13",
+        "95.179.150.23",
+        "199.247.27.95"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "New Zealand",
+      "hostname": "nz.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "185.99.133.64",
+        "185.99.133.177"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Norway",
+      "hostname": "no.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "91.225.217.27",
+        "91.225.217.28",
+        "91.225.217.29",
+        "91.225.217.30",
+        "91.225.217.31"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Oman",
+      "hostname": "om.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "185.226.124.110"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Poland",
+      "hostname": "pl.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "37.120.156.234"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Portugal",
+      "hostname": "pt.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "94.131.10.98",
+        "94.131.10.99",
+        "94.131.10.100",
+        "94.131.10.101"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Romania",
+      "hostname": "ro.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "77.81.98.70",
+        "185.144.83.11",
+        "185.144.83.13"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Singapore",
+      "hostname": "sg-free.vpnunlimitedapp.com",
+      "udp": true,
+      "free": true,
+      "ips": [
+        "178.128.48.177",
+        "178.128.117.139",
+        "188.166.177.236",
+        "206.189.80.158"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Singapore",
+      "hostname": "sg.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "139.99.62.61",
+        "143.198.207.137",
+        "143.198.207.145",
+        "143.198.207.218",
+        "143.198.208.19",
+        "143.198.208.211",
+        "143.198.212.21",
+        "143.198.216.60",
+        "143.198.216.119",
+        "143.198.216.142",
+        "143.198.216.213",
+        "159.65.0.220",
+        "159.223.48.163",
+        "159.223.63.231",
+        "159.223.85.125",
+        "159.223.91.73",
+        "174.138.22.2",
+        "174.138.24.49",
+        "178.128.85.6",
+        "178.128.107.38",
+        "209.97.161.18"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Slovakia",
+      "hostname": "sk.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "5.252.23.93",
+        "5.252.23.194",
+        "45.89.54.32",
+        "45.89.54.232",
+        "45.89.54.234"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Slovenia",
+      "hostname": "si.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "91.132.94.91",
+        "91.132.94.240",
+        "192.71.244.28",
+        "192.71.244.38"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "South Africa",
+      "hostname": "za.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "129.232.129.157",
+        "129.232.130.179",
+        "129.232.130.186",
+        "129.232.130.187",
+        "129.232.133.41",
+        "129.232.134.122",
+        "129.232.219.195",
+        "129.232.219.196"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Spain",
+      "hostname": "es.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "65.20.97.197",
+        "176.120.74.254",
+        "185.231.204.2",
+        "185.231.204.4",
+        "185.231.204.9",
+        "185.231.204.14",
+        "185.231.204.16",
+        "208.85.19.114",
+        "208.85.21.129"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Sweden",
+      "hostname": "se.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "70.34.201.81",
+        "70.34.202.181",
+        "70.34.214.117",
+        "94.131.98.211",
+        "94.131.98.217",
+        "94.131.98.218",
+        "94.131.115.4",
+        "94.131.115.66"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Switzerland",
+      "hostname": "ch.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "94.131.12.81",
+        "94.131.12.83",
+        "94.131.12.90",
+        "94.131.12.96",
+        "94.131.12.104",
+        "94.131.12.116"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Thailand",
+      "hostname": "th.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "45.64.186.97"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Turkey",
+      "hostname": "tr.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "185.17.115.62",
+        "185.73.202.218",
+        "185.123.101.149"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United Arab Emirates",
+      "hostname": "ae.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "45.9.249.201",
+        "45.9.249.202",
+        "45.9.249.209",
+        "45.9.249.211",
+        "45.9.249.216",
+        "45.9.250.143",
+        "45.9.250.145",
+        "147.78.0.91",
+        "147.78.0.93"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United Kingdom",
+      "hostname": "uk.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "5.152.213.186",
+        "77.245.65.2",
+        "88.150.180.82",
+        "88.150.224.74",
+        "176.227.198.122"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United Kingdom",
+      "city": "London",
+      "hostname": "uk-cv.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "5.101.143.66",
+        "5.101.169.146",
+        "178.159.10.78"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United Kingdom",
+      "city": "London",
+      "hostname": "uk-lon.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "5.101.136.154",
+        "78.110.160.6"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "hostname": "us-stream.vpnunlimitedapp.com",
+      "udp": true,
+      "stream": true,
+      "ips": [
+        "64.227.111.143",
+        "128.199.9.51",
+        "138.197.203.142",
+        "143.110.156.9",
+        "143.110.225.79",
+        "159.89.128.183",
+        "161.35.236.242",
+        "164.90.144.44",
+        "165.227.49.171",
+        "167.99.96.113",
+        "178.128.79.75",
+        "192.241.194.208",
+        "198.199.96.52",
+        "198.199.97.247",
+        "198.199.103.88",
+        "198.199.103.243",
+        "198.199.105.87",
+        "198.199.114.155",
+        "206.189.165.44",
+        "206.189.211.205"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "hostname": "us.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "108.181.57.249",
+        "108.181.132.151",
+        "108.181.132.193",
+        "108.181.132.195",
+        "172.106.167.229",
+        "199.115.117.81"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "city": "Chicago",
+      "hostname": "us-chi.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "66.23.205.226",
+        "108.181.62.129",
+        "108.181.62.187",
+        "108.181.62.189",
+        "108.181.62.201"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "city": "Dallas",
+      "hostname": "us-dal.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "172.241.113.19",
+        "172.241.115.99"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "city": "Denver",
+      "hostname": "us-den.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "23.237.26.20",
+        "23.237.26.25",
+        "23.237.26.26",
+        "23.237.26.67",
+        "23.237.26.68",
+        "23.237.26.74"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "city": "Houston",
+      "hostname": "us-hou.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "66.187.75.122",
+        "162.218.228.194",
+        "162.218.228.196",
+        "162.218.229.106"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "city": "Las Vegas",
+      "hostname": "us-lv.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "185.242.5.18",
+        "185.242.5.22"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "city": "Los Angeles",
+      "hostname": "us-la.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "23.83.37.209",
+        "23.83.37.213",
+        "45.136.131.40",
+        "64.31.33.154",
+        "69.162.99.70"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "city": "Miami",
+      "hostname": "us-mia.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "45.32.174.147",
+        "45.77.74.249",
+        "45.77.95.122",
+        "45.77.161.227",
+        "45.77.165.103",
+        "45.77.196.77",
+        "140.82.29.71",
+        "144.202.44.138",
+        "144.202.44.229",
+        "149.28.111.111",
+        "207.246.75.109"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "city": "New York",
+      "hostname": "us-ny-free.vpnunlimitedapp.com",
+      "udp": true,
+      "free": true,
+      "ips": [
+        "64.227.9.14",
+        "137.184.131.0",
+        "137.184.199.252",
+        "137.184.218.195",
+        "143.198.124.34"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "city": "New York",
+      "hostname": "us-ny.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "23.105.134.162",
+        "64.42.178.202",
+        "64.42.178.226"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "city": "Salt Lake City",
+      "hostname": "us-slc.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "209.95.53.223",
+        "209.95.53.225"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "city": "San Francisco",
+      "hostname": "us-sf.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "209.58.135.75",
+        "209.58.135.106",
+        "209.58.137.71"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "United States",
+      "city": "Seattle",
+      "hostname": "us-sea.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "23.81.209.137",
+        "64.120.123.48",
+        "108.62.60.89",
+        "216.244.82.50"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "country": "Vietnam",
+      "hostname": "vn.vpnunlimitedapp.com",
+      "udp": true,
+      "ips": [
+        "146.196.67.7"
+      ]
+    }
+  ]
+}
