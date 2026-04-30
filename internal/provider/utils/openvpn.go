@@ -62,6 +62,7 @@ func OpenVPNConfig(provider OpenVPNProviderSettings,
 	lines.add("mute-replay-warnings")     // these are often ignored by some VPN providers
 	lines.add("auth-retry", "nointeract") // retry authenticating without interaction
 	lines.add("suppress-timestamps")      // do not log timestamps, the Gluetun logger takes care of it
+	lines.add("handshake-window", "10")   // default is 60 seconds which is too long
 	lines.add("dev", settings.Interface)
 	lines.add("verb", fmt.Sprint(*settings.Verbosity))
 	lines.add("proto", connection.Protocol)

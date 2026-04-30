@@ -76,6 +76,7 @@ func modifyConfig(lines []string, connection models.Connection,
 	modified = append(modified, "pull-filter ignore \"auth-token\"") // prevent auth failed loop
 	modified = append(modified, "auth-retry nointeract")
 	modified = append(modified, "suppress-timestamps")
+	modified = append(modified, "handshake-window 10") // default is 60 seconds which is too long
 	if *settings.User != "" {
 		modified = append(modified, "auth-user-pass "+openvpn.AuthConf)
 	}
