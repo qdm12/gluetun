@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -31,7 +32,25 @@ func addProviderFlag(flagSet *flag.FlagSet, providerToFormat map[string]*bool,
 	flagSet.BoolVar(boolPtr, provider, false, "Format "+titleCaser.String(provider)+" servers")
 }
 
-func (c *CLI) FormatServers(args []string) error {
+type FormatServersCommand struct {
+	args []string
+}
+
+func NewFormatServersCommand(args []string) *FormatServersCommand {
+	return &FormatServersCommand{
+		args: args,
+	}
+}
+
+func (c *FormatServersCommand) Name() string {
+	return "format-servers"
+}
+
+func (c *FormatServersCommand) Description() string {
+	return "Format the servers data into a Markdown table"
+}
+
+func (c *FormatServersCommand) Run(_ context.Context) error {
 	var format, output string
 	allProviders := providers.All()
 	allProviderFlags := make([]string, len(allProviders))
@@ -50,7 +69,7 @@ func (c *CLI) FormatServers(args []string) error {
 	for _, provider := range allProviderFlags {
 		addProviderFlag(flagSet, providersToFormat, provider, titleCaser)
 	}
-	if err := flagSet.Parse(args); err != nil {
+	if err := flagSet.Parse(c.args[2:]); err != nil {
 		return err
 	}
 
