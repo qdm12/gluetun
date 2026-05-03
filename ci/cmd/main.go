@@ -29,6 +29,8 @@ func main() {
 		err = internal.ProtonVPNOpenVPNPortForwardingTest(ctx, logger)
 	case "private-internet-access-openvpn-port-forwarding":
 		err = internal.PrivateInternetAccessOpenVPNPortForwardingTest(ctx, logger)
+	case "airvpn-wireguard":
+		err = internal.AirVPNWireguardTest(ctx, logger)
 	default:
 		err = fmt.Errorf("unknown command: %s", os.Args[1])
 	}
