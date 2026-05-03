@@ -27,6 +27,8 @@ type providerCredentials struct {
 type openvpnCredentials struct {
 	Username string
 	Password string
+	Key      string
+	Cert     string
 }
 
 type wireguardCredentials struct {
@@ -76,10 +78,12 @@ func validateCredentials(providerNameToCredentials map[string]providerCredential
 
 func validateOpenvpnCredentials(provider string, creds *openvpnCredentials) error {
 	switch {
-	case creds.Username == "":
+	case creds.Username == "" && creds.Password != "":
 		return fmt.Errorf("provider %q openvpn credentials are missing the username", provider)
-	case creds.Password == "":
+	case creds.Password == "" && creds.Username != "":
 		return fmt.Errorf("provider %q openvpn credentials are missing the password", provider)
+	case creds.Username == "" && creds.Password == "" && creds.Key == "" && creds.Cert == "":
+		return fmt.Errorf("provider %q openvpn credentials are missing the username and password", provider)
 	}
 	return nil
 }
@@ -147,6 +151,8 @@ func buildOpenvpnEnv(creds *openvpnCredentials) []string {
 	return []string{
 		"OPENVPN_USER=" + creds.Username,
 		"OPENVPN_PASSWORD=" + creds.Password,
+		"OPENVPN_KEY=" + creds.Key,
+		"OPENVPN_CERT=" + creds.Cert,
 	}
 }
 
@@ -220,6 +226,11 @@ func formatCredentialForDump(provider, vpnType string,
 		builder.WriteString("\n")
 		builder.WriteString("password: ")
 		builder.WriteString(providerCredentials.OpenVPN.Password)
+		builder.WriteString("\nkey: ")
+		builder.WriteString(providerCredentials.OpenVPN.Key)
+		builder.WriteString("\ncert: ")
+		builder.WriteString(providerCredentials.OpenVPN.Cert)
+		builder.WriteString("\n")
 	case vpnTypeWireGuard:
 		if providerCredentials.WireGuard == nil {
 			return "", fmt.Errorf("no wireguard credentials found for provider %q", provider)

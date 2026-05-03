@@ -205,19 +205,31 @@ func promptAndAddCredential(
 ) error {
 	switch vpnType {
 	case vpnTypeOpenVPN:
-		username, err := readLine(ctx, "OpenVPN username: ", false)
+		username, err := readLine(ctx, "OpenVPN username: ", true)
 		if err != nil {
 			return fmt.Errorf("reading username: %w", err)
 		}
 
-		password, err := readSecret(ctx, "OpenVPN password: ", false)
+		password, err := readSecret(ctx, "OpenVPN password: ", username == "")
 		if err != nil {
 			return fmt.Errorf("reading password: %w", err)
+		}
+
+		key, err := readSecret(ctx, "OpenVPN key: ", true)
+		if err != nil {
+			return fmt.Errorf("reading key: %w", err)
+		}
+
+		cert, err := readSecret(ctx, "OpenVPN cert: ", true)
+		if err != nil {
+			return fmt.Errorf("reading cert: %w", err)
 		}
 
 		openvpnCredentials := &openvpnCredentials{
 			Username: username,
 			Password: string(password),
+			Key:      string(key),
+			Cert:     string(cert),
 		}
 		err = validateOpenvpnCredentials(provider, openvpnCredentials)
 		if err != nil {
