@@ -44,6 +44,7 @@ func (p *Provider) validate(vpnType string, filterChoicesGetter FilterChoicesGet
 	case vpn.Wireguard:
 		validNames = []string{
 			providers.Airvpn,
+			providers.Cryptostorm,
 			providers.Custom,
 			providers.Fastestvpn,
 			providers.Ivpn,

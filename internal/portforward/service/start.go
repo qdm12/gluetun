@@ -44,6 +44,7 @@ func (s *Service) Start(ctx context.Context) (runError <-chan error, err error) 
 		Username:       s.settings.Username,
 		Password:       s.settings.Password,
 		PortsCount:     s.settings.PortsCount,
+		ListeningPorts: s.settings.ListeningPorts,
 	}
 	internalToExternalPorts, err := s.settings.PortForwarder.PortForward(ctx, obj)
 	if err != nil {
