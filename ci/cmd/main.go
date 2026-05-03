@@ -31,6 +31,8 @@ func main() {
 		err = internal.PrivateInternetAccessOpenVPNPortForwardingTest(ctx, logger)
 	case "airvpn-wireguard":
 		err = internal.AirVPNWireguardTest(ctx, logger)
+	case "airvpn-openvpn":
+		err = internal.AirVPNOpenVPNTest(ctx, logger)
 	default:
 		err = fmt.Errorf("unknown command: %s", os.Args[1])
 	}

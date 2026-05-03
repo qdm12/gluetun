@@ -120,6 +120,10 @@ jobs:
           secrets.AIRVPN_WIREGUARD_PRESHARED_KEY }}\n${{
           secrets.AIRVPN_WIREGUARD_ADDRESSES }}" | ./ci/runner airvpn-wireguard
 
+      - name: Run Gluetun container with AirVPN OpenVPN configuration
+        run: echo -e "${{ secrets.AIRVPN_OPENVPN_KEY }}\n${{ secrets.AIRVPN_OPENVPN_CERT
+          }}" | ./ci/runner airvpn-openvpn
+
   codeql:
     runs-on: ubuntu-latest
     permissions:
