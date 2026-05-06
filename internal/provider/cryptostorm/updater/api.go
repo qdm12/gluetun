@@ -2,7 +2,6 @@ package updater
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -11,13 +10,11 @@ import (
 	"golang.org/x/net/html"
 )
 
-var ErrHTMLTableNotFound = errors.New("HTML server table not found")
-
 // nodeData represents one entry parsed from the Cryptostorm wireguard page.
 type nodeData struct {
 	Location string // e.g. "Canada - Montreal", "Austria", "US - Texas - Dallas"
 	Hostname string // e.g. "austria.cstorm.is"
-	WgPubKey string // WireGuard public key
+	WgPubKey string
 }
 
 // fetchNodes retrieves and parses the Cryptostorm node list from their
@@ -31,14 +28,18 @@ func fetchNodes(ctx context.Context, client *http.Client) (
 		return nil, nil, fmt.Errorf("fetching HTML: %w", err)
 	}
 
-	return parseHTML(rootNode)
+	nodes, warnings, err = parseHTML(rootNode)
+	if err != nil {
+		return nil, nil, fmt.Errorf("parsing HTML: %w", err)
+	}
+	return nodes, warnings, nil
 }
 
 func parseHTML(rootNode *html.Node) (nodes []nodeData,
 	warnings []string, err error) {
 	tableNode := htmlutils.BFS(rootNode, htmlutils.MatchData("table"))
 	if tableNode == nil {
-		return nil, nil, fmt.Errorf("%w", ErrHTMLTableNotFound)
+		return nil, nil, fmt.Errorf("HTML server table not found")
 	}
 
 	// html.Parse inserts <tbody> per the HTML5 spec, so <tr> elements
@@ -49,12 +50,8 @@ func parseHTML(rootNode *html.Node) (nodes []nodeData,
 		rowParent = tbody
 	}
 	rows := htmlutils.DirectChildren(rowParent, htmlutils.MatchData("tr"))
-	for i, row := range rows {
-		if i == 0 {
-			// Skip header row.
-			continue
-		}
-
+	nodes = make([]nodeData, 0, len(rows)-1)
+	for _, row := range rows[1:] { // skip header row
 		cells := htmlutils.DirectChildren(row, htmlutils.MatchData("td"))
 		const expectedCells = 3
 		if len(cells) != expectedCells {
@@ -64,16 +61,19 @@ func parseHTML(rootNode *html.Node) (nodes []nodeData,
 			continue
 		}
 
-		location := textContent(cells[0])
-		location = strings.TrimSpace(location)
+		location := strings.TrimSpace(textContent(cells[0]))
 		// Remove non-breaking spaces left over from &nbsp; entities.
 		location = strings.ReplaceAll(location, "\u00a0", "")
 		location = strings.TrimSpace(location)
-
 		hostname := strings.TrimSpace(textContent(cells[1]))
 		wgPubKey := strings.TrimSpace(textContent(cells[2]))
 
-		if hostname == "" {
+		switch {
+		case location == "":
+			warnings = append(warnings,
+				htmlutils.WrapWarning("empty location", row))
+			continue
+		case hostname == "":
 			warnings = append(warnings,
 				htmlutils.WrapWarning("empty hostname", row))
 			continue

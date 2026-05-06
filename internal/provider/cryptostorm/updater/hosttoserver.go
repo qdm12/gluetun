@@ -12,7 +12,8 @@ import (
 type hostToServer map[string]models.Server
 
 func (hts hostToServer) toUniqueHostsSlice() (hosts []string) {
-	seen := make(map[string]struct{})
+	seen := make(map[string]struct{}, len(hts))
+	hosts = make([]string, 0, len(hts))
 	for key := range hts {
 		host := extractHost(key)
 		if _, ok := seen[host]; !ok {
