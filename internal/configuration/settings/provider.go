@@ -88,7 +88,7 @@ func (p *Provider) overrideWith(other Provider) {
 
 func (p *Provider) setDefaults() {
 	p.Name = gosettings.DefaultComparable(p.Name, providers.PrivateInternetAccess)
-	p.PortForwarding.setDefaults()
+	p.PortForwarding.setDefaults(p.Name)
 	p.ServerSelection.setDefaults(p.Name, *p.PortForwarding.Enabled)
 }
 

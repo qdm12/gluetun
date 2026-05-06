@@ -150,14 +150,21 @@ func (p *PortForwarding) OverrideWith(other PortForwarding) {
 	p.Password = gosettings.OverrideWithComparable(p.Password, other.Password)
 }
 
-func (p *PortForwarding) setDefaults() {
+func (p *PortForwarding) setDefaults(vpnProvider string) {
 	p.Enabled = gosettings.DefaultPointer(p.Enabled, false)
 	p.Provider = gosettings.DefaultPointer(p.Provider, "")
 	p.Filepath = gosettings.DefaultPointer(p.Filepath, "/tmp/gluetun/forwarded_port")
 	p.UpCommand = gosettings.DefaultPointer(p.UpCommand, "")
 	p.DownCommand = gosettings.DefaultPointer(p.DownCommand, "")
 	p.ListeningPorts = gosettings.DefaultSlice(p.ListeningPorts, []uint16{0}) // disabled
-	p.PortsCount = gosettings.DefaultComparable(p.PortsCount, 1)
+	// For Cryptostorm, default PortsCount to the number of listening ports
+	// specified, since each listening port maps directly to a requested port.
+	defaultPortsCount := uint16(1)
+	if vpnProvider == providers.Cryptostorm &&
+		len(p.ListeningPorts) > 0 && p.ListeningPorts[0] != 0 {
+		defaultPortsCount = uint16(len(p.ListeningPorts))
+	}
+	p.PortsCount = gosettings.DefaultComparable(p.PortsCount, defaultPortsCount)
 }
 
 func (p PortForwarding) String() string {
