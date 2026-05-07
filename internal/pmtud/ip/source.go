@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/netip"
-	"syscall"
+	"strings"
 
 	"github.com/jsimonetti/rtnetlink"
 	"github.com/qdm12/gluetun/internal/pmtud/constants"
@@ -54,8 +54,7 @@ func srcIP(dst netip.Addr) (netip.Addr, error) {
 	}
 	messages, err := conn.Route.Get(requestMessage)
 	if err != nil {
-		var sysErr syscall.Errno
-		if errors.As(err, &sysErr) && sysErr == syscall.ENETUNREACH {
+		if strings.Contains(err.Error(), "network is unreachable") {
 			err = ErrNetworkUnreachable
 		}
 		return netip.Addr{}, fmt.Errorf("getting routes to %s: %w", dst, err)
