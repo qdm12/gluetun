@@ -174,14 +174,16 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 		return err
 	}
 	splashSettings := gosplash.Settings{
-		User:         "qdm12",
-		Repository:   "gluetun",
-		Emails:       []string{"quentin.mcgaw@gmail.com"},
-		Version:      buildInfo.Version,
-		Commit:       buildInfo.Commit,
-		Created:      buildInfo.Created,
-		Announcement: "Set BORINGPOLL_GLUETUNCOM=on to help combat AI slop and shutdown that scam website",
-		AnnounceExp:  announcementExp,
+		User:       "qdm12",
+		Repository: "gluetun",
+		Emails:     []string{"quentin.mcgaw@gmail.com"},
+		Version:    buildInfo.Version,
+		Commit:     buildInfo.Commit,
+		Created:    buildInfo.Created,
+		Announcement: "the repository will be migrated to https://github.com/passteque/gluetun on 2026-05-21, " +
+			"which is a Github organization under my sole control, so don't get alarmed if you get redirected " +
+			"in the coming days (reason: personal paperwork ugh)",
+		AnnounceExp: announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
 		GithubSponsor: "qdm12",

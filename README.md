@@ -1,10 +1,10 @@
 # Gluetun VPN client
 
+Lightweight swiss-army-knife-like VPN client to multiple VPN service providers
+
 ⚠️ This and [gluetun-wiki](https://github.com/qdm12/gluetun-wiki) are the only websites for Gluetun, other websites claiming to be official are scams ⚠️
 
-💁 You can optionally set `BORINGPOLL_GLUETUNCOM=on` to... [poll](./internal/boringpoll/boringpoll.go) that **scammy AI slop** website every few minutes so it costs them too much to keep it up. My gentle email reminders to take it down are being grossly ignored 🤷 This would make me very happy and serve this community.
-
-Lightweight swiss-army-knife-like VPN client to multiple VPN service providers
+🗯️ this repository will be migrated to [github.com/passteque/gluetun](https://github.com/passteque/gluetun) on 2026-05-21, which is a Github organization under my sole control, so don't get alarmed if you get redirected in the coming days 😉 Reason being migrating Github sponsors to the Open source collective due to my personal situation, basically annoying paperwork. On the plus side, it will be more transparent and funds donated will only be used for the project. The Docker image names will remain the same.
 
 ![Title image](https://raw.githubusercontent.com/qdm12/gluetun/master/title.svg)
 
@@ -131,6 +131,10 @@ services:
 ## Fun graphs
 
 [![Star History Chart](https://api.star-history.com/svg?repos=qdm12/gluetun&type=date&legend=top-left)](https://www.star-history.com/#qdm12/gluetun&type=date&legend=top-left)
+
+## Fight AI scamming
+
+💁 You can optionally set `BORINGPOLL_GLUETUNCOM=on` to... [poll](./internal/boringpoll/boringpoll.go) that **scammy AI slop** website every few minutes so it costs them in terms of egress traffic. My gentle email reminders to take it down are being grossly ignored 🤷 This would make me very happy and serve this community.
 
 ## License
 
