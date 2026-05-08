@@ -470,6 +470,18 @@ func makeNOKStatusError(response *http.Response, substitutions map[string]string
 	url = replaceInString(url, substitutions)
 
 	b, _ := io.ReadAll(response.Body)
+
+	var responseData struct {
+		Status  string `json:"status"`
+		Message string `json:"message"`
+	}
+	if err := json.Unmarshal(b, &responseData); err == nil {
+		responseData.Message = replaceInString(responseData.Message, substitutions)
+		return fmt.Errorf("HTTP status code not OK: %s: %d %s: response received: status %q and message %q",
+			url, response.StatusCode, response.Status, responseData.Status, responseData.Message)
+	}
+
+	// Fallback on non JSON response body
 	shortenMessage := string(b)
 	shortenMessage = strings.ReplaceAll(shortenMessage, "\n", "")
 	shortenMessage = strings.ReplaceAll(shortenMessage, "  ", " ")
