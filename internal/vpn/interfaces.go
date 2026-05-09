@@ -61,6 +61,7 @@ type Storage interface {
 }
 
 type NetLinker interface {
+	AddrList(linkIndex uint32, family uint8) (addresses []netip.Prefix, err error)
 	AddrReplace(linkIndex uint32, addr netip.Prefix) error
 	Router
 	Ruler
