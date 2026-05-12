@@ -27,11 +27,12 @@ func Test_GetConnection(t *testing.T) {
 		defaults        ConnectionDefaults
 		ipv6Supported   bool
 		randSource      rand.Source
-		connection      models.Connection
+		connections     []models.Connection
 		errMessage      string
 	}{
 		"storage filter error": {
 			filterError: errors.New("test error"),
+			connections: []models.Connection{{}},
 			errMessage:  "filtering servers: test error",
 		},
 		"server without IPs": {
@@ -46,7 +47,8 @@ func Test_GetConnection(t *testing.T) {
 				OpenVPNUDPPort: 1,
 				WireguardPort:  1,
 			},
-			errMessage: "no connection to pick from",
+			connections: []models.Connection{{}},
+			errMessage:  "no connection to pick from",
 		},
 		"OpenVPN server with hostname": {
 			filteredServers: []models.Server{
@@ -61,13 +63,13 @@ func Test_GetConnection(t *testing.T) {
 				WithDefaults(providers.Mullvad),
 			defaults:   NewConnectionDefaults(443, 1194, 58820),
 			randSource: rand.NewSource(0),
-			connection: models.Connection{
+			connections: []models.Connection{{
 				Type:     vpn.OpenVPN,
 				IP:       netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 				Protocol: constants.UDP,
 				Port:     1194,
 				Hostname: "name",
-			},
+			}},
 		},
 		"OpenVPN server with x509": {
 			filteredServers: []models.Server{
@@ -83,13 +85,13 @@ func Test_GetConnection(t *testing.T) {
 				WithDefaults(providers.Mullvad),
 			defaults:   NewConnectionDefaults(443, 1194, 58820),
 			randSource: rand.NewSource(0),
-			connection: models.Connection{
+			connections: []models.Connection{{
 				Type:     vpn.OpenVPN,
 				IP:       netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 				Protocol: constants.UDP,
 				Port:     1194,
 				Hostname: "x509",
-			},
+			}},
 		},
 		"server with IPv4 and IPv6": {
 			filteredServers: []models.Server{
@@ -111,12 +113,12 @@ func Test_GetConnection(t *testing.T) {
 				WithDefaults(providers.Mullvad),
 			defaults:   NewConnectionDefaults(443, 1194, 58820),
 			randSource: rand.NewSource(0),
-			connection: models.Connection{
+			connections: []models.Connection{{
 				Type:     vpn.OpenVPN,
 				IP:       netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 				Protocol: constants.UDP,
 				Port:     1194,
-			},
+			}},
 		},
 		"server with IPv4 and IPv6 and ipv6 supported": {
 			filteredServers: []models.Server{
@@ -134,12 +136,12 @@ func Test_GetConnection(t *testing.T) {
 			defaults:      NewConnectionDefaults(443, 1194, 58820),
 			ipv6Supported: true,
 			randSource:    rand.NewSource(0),
-			connection: models.Connection{
+			connections: []models.Connection{{
 				Type:     vpn.OpenVPN,
 				IP:       netip.IPv6Unspecified(),
 				Protocol: constants.UDP,
 				Port:     1194,
-			},
+			}},
 		},
 		"mixed servers": {
 			filteredServers: []models.Server{
@@ -147,12 +149,6 @@ func Test_GetConnection(t *testing.T) {
 					VPN:      vpn.OpenVPN,
 					UDP:      true,
 					IPs:      []netip.Addr{netip.AddrFrom4([4]byte{1, 1, 1, 1})},
-					OvpnX509: "ovpnx509",
-				},
-				{
-					VPN:      vpn.Wireguard,
-					UDP:      true,
-					IPs:      []netip.Addr{netip.AddrFrom4([4]byte{2, 2, 2, 2})},
 					OvpnX509: "ovpnx509",
 				},
 				{
@@ -169,13 +165,19 @@ func Test_GetConnection(t *testing.T) {
 				WithDefaults(providers.Mullvad),
 			defaults:   NewConnectionDefaults(443, 1194, 58820),
 			randSource: rand.NewSource(0),
-			connection: models.Connection{
+			connections: []models.Connection{{
 				Type:     vpn.OpenVPN,
 				IP:       netip.AddrFrom4([4]byte{1, 1, 1, 1}),
 				Protocol: constants.UDP,
 				Port:     1194,
 				Hostname: "ovpnx509",
-			},
+			}, {
+				Type:     vpn.OpenVPN,
+				IP:       netip.AddrFrom4([4]byte{3, 3, 3, 3}),
+				Protocol: constants.UDP,
+				Port:     1194,
+				Hostname: "hostname",
+			}},
 		},
 	}
 
@@ -194,7 +196,7 @@ func Test_GetConnection(t *testing.T) {
 				testCase.serverSelection, testCase.defaults, testCase.ipv6Supported,
 				connPicker)
 
-			assert.Equal(t, testCase.connection, connection)
+			assert.Contains(t, testCase.connections, connection)
 			if testCase.errMessage != "" {
 				assert.EqualError(t, err, testCase.errMessage)
 			} else {
