@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"math/rand/v2"
 	"slices"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
@@ -43,6 +44,12 @@ func GetConnection(provider string,
 	if err != nil {
 		return connection, fmt.Errorf("filtering servers: %w", err)
 	}
+
+	// Randomize order of the servers struct so the first connection to be picked
+	// won't always be the same one.
+	rand.Shuffle(len(servers), func(i, j int) {
+		servers[i], servers[j] = servers[j], servers[i]
+	})
 
 	protocol := getProtocol(selection)
 	port := getPort(selection, defaults.OpenVPNTCPPort,
