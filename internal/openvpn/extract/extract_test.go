@@ -62,6 +62,14 @@ func Test_extractDataFromLines(t *testing.T) {
 				Protocol: constants.UDP,
 			},
 		},
+		"leading_whitespace": {
+			lines: []string{"  proto tcp", "\tremote 1.2.3.4 443 tcp"},
+			connection: models.Connection{
+				IP:       netip.AddrFrom4([4]byte{1, 2, 3, 4}),
+				Port:     443,
+				Protocol: constants.TCP,
+			},
+		},
 	}
 
 	for name, testCase := range testCases {

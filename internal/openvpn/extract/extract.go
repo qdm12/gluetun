@@ -53,6 +53,8 @@ func extractDataFromLines(lines []string) (
 func extractDataFromLine(line string) (
 	ip netip.Addr, port uint16, protocol string, err error,
 ) {
+	line = strings.TrimSpace(line)
+
 	switch {
 	case strings.HasPrefix(line, "proto "):
 		protocol, err = extractProto(line)
