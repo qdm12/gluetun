@@ -31,7 +31,7 @@ type urlData struct{}
 func New(client *http.Client, logger Logger, settings settings.BoringPoll) *BoringPoll {
 	urlToData := make(map[string]*urlData)
 	if *settings.GluetunCom {
-		urlToData["https://gluetun.com/wp-json"] = &urlData{}
+		logger.Infof("gluetun.com is DOWN most likely thanks to you! so not doing anything anymore")
 	}
 	return &BoringPoll{
 		client:    client,

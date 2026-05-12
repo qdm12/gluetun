@@ -132,10 +132,6 @@ services:
 
 [![Star History Chart](https://api.star-history.com/svg?repos=qdm12/gluetun&type=date&legend=top-left)](https://www.star-history.com/#qdm12/gluetun&type=date&legend=top-left)
 
-## Fight AI scamming
-
-💁 You can optionally set `BORINGPOLL_GLUETUNCOM=on` to... [poll](./internal/boringpoll/boringpoll.go) that **scammy AI slop** website every few minutes so it costs them in terms of egress traffic. My gentle email reminders to take it down are being grossly ignored 🤷 This would make me very happy and serve this community.
-
 ## License
 
 [![MIT](https://img.shields.io/github/license/qdm12/gluetun)](https://github.com/qdm12/gluetun/blob/master/LICENSE)
