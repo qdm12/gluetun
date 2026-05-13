@@ -19,6 +19,8 @@ COPY --from=golangci-lint /bin /go/bin/golangci-lint
 COPY --from=mockgen /bin /go/bin/mockgen
 WORKDIR /tmp/gobuild
 COPY go.mod go.sum ./
+# Temporary, remove this:
+COPY gluetun-servers/ ./gluetun-servers/
 RUN go mod download
 COPY cmd/ ./cmd/
 COPY internal/ ./internal/
@@ -249,6 +251,7 @@ ENV VPN_SERVICE_PROVIDER=pia \
     UPDATER_PERIOD=0 \
     UPDATER_MIN_RATIO=0.8 \
     UPDATER_VPN_SERVICE_PROVIDERS= \
+    UPDATER_PREFER_DIRECT_DOWNLOAD=no \
     UPDATER_PROTONVPN_EMAIL= \
     UPDATER_PROTONVPN_PASSWORD= \
     # Public IP
@@ -257,7 +260,8 @@ ENV VPN_SERVICE_PROVIDER=pia \
     PUBLICIP_API=ipinfo,ifconfigco,ip2location,cloudflare \
     PUBLICIP_API_TOKEN= \
     # Storage
-    STORAGE_FILEPATH=/gluetun/servers.json \
+    STORAGE_SERVERS_ENABLED=on \
+    STORAGE_SERVERS_DIRECTORY_PATH=/gluetun/servers/ \
     # Pprof
     PPROF_ENABLED=no \
     PPROF_BLOCK_PROFILE_RATE=0 \

@@ -1,0 +1,663 @@
+{
+  "version": 1,
+  "timestamp": 1726044812,
+  "servers": [
+    {
+      "vpn": "openvpn",
+      "region": "Algeria",
+      "hostname": "dz1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.104.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Argentina",
+      "hostname": "ar1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.16.35"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Australia Melbourne",
+      "hostname": "au2.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "64.253.88.29"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Australia Perth",
+      "hostname": "au3.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.18.27"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Australia Sydney",
+      "hostname": "au1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "64.253.88.21"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Austria",
+      "hostname": "at1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.148.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Bahrain",
+      "hostname": "bh1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.63.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Belgium",
+      "hostname": "be1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.145.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Brazil",
+      "hostname": "br1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.16.33"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Bulgaria",
+      "hostname": "bg1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.167.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Canada",
+      "hostname": "ca1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.34.34"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Columbia",
+      "hostname": "co1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.16.37"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Costa Rica",
+      "hostname": "cr1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.16.39"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Czech Republic",
+      "hostname": "cz1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.164.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Denmark",
+      "hostname": "dk1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.154.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Dubai",
+      "hostname": "ae1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.101.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Egypt",
+      "hostname": "eg1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "31.6.10.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "El Salvador",
+      "hostname": "sv1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.34.36"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Finland",
+      "hostname": "fi1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.166.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "France",
+      "hostname": "fr1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.141.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Germany",
+      "hostname": "de1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.128.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Greece",
+      "hostname": "gr1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "31.6.11.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Hong Kong",
+      "hostname": "hk1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.18.37"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Iceland",
+      "hostname": "is1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "31.6.17.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "India",
+      "hostname": "in1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.60.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Indonesia",
+      "hostname": "id1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.18.28"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Ireland",
+      "hostname": "ie1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "31.6.19.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Israel",
+      "hostname": "il1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.59.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Italy",
+      "hostname": "it1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.161.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Japan",
+      "hostname": "jp1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.20.20"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Latvia",
+      "hostname": "lv1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.174.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Liechtenstein",
+      "hostname": "li1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.177.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Lithuania",
+      "hostname": "lt1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.173.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Luxembourg",
+      "hostname": "lu1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.165.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Macao",
+      "hostname": "mo1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "69.167.31.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Malaysia",
+      "hostname": "my1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.18.29"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Maldives",
+      "hostname": "mv1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.18.35"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Marshall Islands",
+      "hostname": "mh1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.18.34"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Mexico",
+      "hostname": "mx1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.34.24"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Netherlands",
+      "hostname": "eu1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.135.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "New Zealand",
+      "hostname": "nz1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "64.253.88.29"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Norway",
+      "hostname": "no1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.163.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Pakistan",
+      "hostname": "pk1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "31.6.58.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Panama",
+      "hostname": "pa1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.16.41"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Philippines",
+      "hostname": "ph1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.18.30"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Poland",
+      "hostname": "pl1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.170.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Portugal",
+      "hostname": "pt1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.168.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Qatar",
+      "hostname": "qa1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.62.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Romania",
+      "hostname": "ro1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.171.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Russia",
+      "hostname": "ru1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.151.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Saudi Arabia",
+      "hostname": "sa1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.61.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Singapore",
+      "hostname": "sg1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.18.31"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Slovakia",
+      "hostname": "sk1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.176.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Slovenia",
+      "hostname": "si1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.175.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "South Korea",
+      "hostname": "kr1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.20.21"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Spain",
+      "hostname": "es1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.157.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Sweden",
+      "hostname": "se1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.159.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Switzerland",
+      "hostname": "ch1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "31.6.41.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Taiwan",
+      "hostname": "tw1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "69.167.32.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Thailand",
+      "hostname": "th1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.18.32"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Turkey",
+      "hostname": "tr1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.169.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "USA Austin",
+      "hostname": "us3.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.34.28"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "USA Chicago",
+      "hostname": "us6.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.34.22"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "USA Los Angeles",
+      "hostname": "us1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "69.167.28.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "USA Miami",
+      "hostname": "us4.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.16.31"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "USA New York",
+      "hostname": "us5.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.34.32"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "USA San Francisco",
+      "hostname": "us7.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "69.167.29.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "USA Seattle",
+      "hostname": "us8.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "69.167.30.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "USA Washington DC",
+      "hostname": "us2.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "209.160.115.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Ukraine",
+      "hostname": "ua1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.172.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "United Kingdom",
+      "hostname": "uk1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "178.208.168.253"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Uruguay",
+      "hostname": "uy1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "128.90.34.26"
+      ]
+    },
+    {
+      "vpn": "openvpn",
+      "region": "Vietnam",
+      "hostname": "vn1.vpn.giganews.com",
+      "udp": true,
+      "ips": [
+        "216.168.18.33"
+      ]
+    }
+  ]
+}

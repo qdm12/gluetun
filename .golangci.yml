@@ -71,6 +71,9 @@ linters:
       - linters:
           - err113
         text: "do not define dynamic errors, use wrapped static errors instead"
+      - linters: # TODO remove this is temporary
+          - gomoddirectives
+        text: "local replacement are not allowed: github.com/qdm12/gluetun-servers"
 
     paths:
       - third_party$
