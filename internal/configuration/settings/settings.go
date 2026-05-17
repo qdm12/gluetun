@@ -21,6 +21,7 @@ type Settings struct {
 	Log           Log
 	PublicIP      PublicIP
 	Shadowsocks   Shadowsocks
+	Socks5        Socks5
 	Storage       Storage
 	System        System
 	Updater       Updater
@@ -50,6 +51,7 @@ func (s *Settings) Validate(filterChoicesGetter FilterChoicesGetter, ipv6Support
 		"log":             s.Log.validate,
 		"public ip check": s.PublicIP.validate,
 		"shadowsocks":     s.Shadowsocks.validate,
+		"socks5":          s.Socks5.validate,
 		"storage":         s.Storage.validate,
 		"system":          s.System.validate,
 		"updater":         s.Updater.Validate,
@@ -82,6 +84,7 @@ func (s *Settings) copy() (copied Settings) {
 		Log:           s.Log.copy(),
 		PublicIP:      s.PublicIP.copy(),
 		Shadowsocks:   s.Shadowsocks.copy(),
+		Socks5:        s.Socks5.copy(),
 		Storage:       s.Storage.copy(),
 		System:        s.System.copy(),
 		Updater:       s.Updater.copy(),
@@ -105,6 +108,7 @@ func (s *Settings) OverrideWith(other Settings,
 	patchedSettings.Log.overrideWith(other.Log)
 	patchedSettings.PublicIP.overrideWith(other.PublicIP)
 	patchedSettings.Shadowsocks.overrideWith(other.Shadowsocks)
+	patchedSettings.Socks5.overrideWith(other.Socks5)
 	patchedSettings.Storage.overrideWith(other.Storage)
 	patchedSettings.System.overrideWith(other.System)
 	patchedSettings.Updater.overrideWith(other.Updater)
@@ -132,6 +136,7 @@ func (s *Settings) SetDefaults() {
 	s.IPv6.setDefaults()
 	s.PublicIP.setDefaults()
 	s.Shadowsocks.setDefaults()
+	s.Socks5.setDefaults()
 	s.Storage.setDefaults()
 	s.System.setDefaults()
 	s.Version.setDefaults()
@@ -155,6 +160,7 @@ func (s Settings) toLinesNode() (node *gotree.Node) {
 	node.AppendNode(s.IPv6.toLinesNode())
 	node.AppendNode(s.Health.toLinesNode())
 	node.AppendNode(s.Shadowsocks.toLinesNode())
+	node.AppendNode(s.Socks5.toLinesNode())
 	node.AppendNode(s.HTTPProxy.toLinesNode())
 	node.AppendNode(s.ControlServer.toLinesNode())
 	node.AppendNode(s.Storage.toLinesNode())
@@ -213,6 +219,7 @@ func (s *Settings) Read(r *reader.Reader, warner Warner) (err error) {
 			return s.PublicIP.read(r, warner)
 		},
 		"shadowsocks": s.Shadowsocks.read,
+		"socks5":      s.Socks5.read,
 		"storage":     s.Storage.read,
 		"system":      s.System.read,
 		"updater":     s.Updater.read,
