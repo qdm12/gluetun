@@ -51,9 +51,12 @@ func (s *Storage) flushToFile(manifestPath string) error {
 			return fmt.Errorf("opening servers data file for %s: %w", provider, err)
 		}
 
+		encodedProviderServers := providerServers
+		encodedProviderServers.Filepath = ""
+
 		encoder := json.NewEncoder(providerFile)
 		encoder.SetIndent("", "  ")
-		err = encoder.Encode(providerServers)
+		err = encoder.Encode(encodedProviderServers)
 		if err != nil {
 			_ = providerFile.Close()
 			return fmt.Errorf("encoding servers data for %s: %w", provider, err)
