@@ -15,6 +15,7 @@ require (
 	github.com/mdlayher/netlink v1.9.0
 	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/qdm12/dns/v2 v2.0.0-rc9.0.20260421173011-9de8e7fdbe3a
+	github.com/qdm12/gluetun-servers v0.1.0
 	github.com/qdm12/gosettings v0.4.4
 	github.com/qdm12/goshutdown v0.3.0
 	github.com/qdm12/gosplash v0.2.1-0.20260305164749-b713de4fee6c
@@ -54,7 +55,6 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.60.1 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	github.com/qdm12/gluetun-servers v0.1.0
 	github.com/qdm12/goservices v0.1.1-0.20251104135713-6bee97bd4978 // indirect
 	github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
@@ -67,5 +67,3 @@ require (
 	kernel.org/pub/linux/libs/security/libcap/cap v1.2.70 // indirect
 	kernel.org/pub/linux/libs/security/libcap/psx v1.2.70 // indirect
 )
-
-replace github.com/qdm12/gluetun-servers => ./gluetun-servers
