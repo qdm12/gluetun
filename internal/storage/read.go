@@ -34,6 +34,12 @@ func (s *Storage) readFromFile(manifestPath string, hardcodedVersions map[string
 		return servers, true, err
 	}
 
+	if len(b) == 0 {
+		// To satisfy https://github.com/qdm12/gluetun/issues/3318
+		// not too sure why but eh I'm feeling generous adding 3 code lines for it.
+		return servers, false, nil
+	}
+
 	servers, err = s.extractServersFromBytes(b, hardcodedVersions)
 	return servers, true, err
 }
