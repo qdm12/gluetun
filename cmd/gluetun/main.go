@@ -169,21 +169,19 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	defer fmt.Println(gluetunLogo)
 
-	announcementExp, err := time.Parse(time.RFC3339, "2026-04-30T00:00:00Z")
+	announcementExp, err := time.Parse(time.RFC3339, "2026-06-30T00:00:00Z")
 	if err != nil {
 		return err
 	}
 	splashSettings := gosplash.Settings{
-		User:       "qdm12",
-		Repository: "gluetun",
-		Emails:     []string{"quentin.mcgaw@gmail.com"},
-		Version:    buildInfo.Version,
-		Commit:     buildInfo.Commit,
-		Created:    buildInfo.Created,
-		Announcement: "the repository will be migrated to https://github.com/passteque/gluetun on 2026-05-21, " +
-			"which is a Github organization under my sole control, so don't get alarmed if you get redirected " +
-			"in the coming days (reason: personal paperwork ugh)",
-		AnnounceExp: announcementExp,
+		User:         "qdm12",
+		Repository:   "gluetun",
+		Emails:       []string{"quentin.mcgaw@gmail.com"},
+		Version:      buildInfo.Version,
+		Commit:       buildInfo.Commit,
+		Created:      buildInfo.Created,
+		Announcement: "Your servers data files are now migrated to /gluetun/servers/",
+		AnnounceExp:  announcementExp,
 		// Sponsor information
 		PaypalUser:    "qmcgaw",
 		GithubSponsor: "qdm12",
@@ -245,7 +243,8 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 
 	// TODO run this in a loop or in openvpn to reload from file without restarting
 	storageLogger := logger.New(log.SetComponent("storage"))
-	storage, err := storage.New(storageLogger, *allSettings.Storage.Filepath)
+	storage, err := storage.New(storageLogger, *allSettings.Storage.ServersEnabled,
+		allSettings.Storage.ServersPath, allSettings.Storage.LegacyServersFilepath)
 	if err != nil {
 		return err
 	}

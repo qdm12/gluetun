@@ -29,6 +29,9 @@ type Updater struct {
 	// Providers is the list of VPN service providers
 	// to update server information for.
 	Providers []string
+	// PreferDirectDownload is whether to prefer direct download of
+	// server data from Github (recommended).
+	PreferDirectDownload *bool
 	// ProtonEmail is the email to authenticate with the Proton API.
 	ProtonEmail *string
 	// ProtonPassword is the password to authenticate with the Proton API.
@@ -72,11 +75,12 @@ func (u Updater) Validate() (err error) {
 
 func (u *Updater) copy() (copied Updater) {
 	return Updater{
-		Period:         gosettings.CopyPointer(u.Period),
-		MinRatio:       u.MinRatio,
-		Providers:      gosettings.CopySlice(u.Providers),
-		ProtonEmail:    gosettings.CopyPointer(u.ProtonEmail),
-		ProtonPassword: gosettings.CopyPointer(u.ProtonPassword),
+		Period:               gosettings.CopyPointer(u.Period),
+		MinRatio:             u.MinRatio,
+		Providers:            gosettings.CopySlice(u.Providers),
+		PreferDirectDownload: gosettings.CopyPointer(u.PreferDirectDownload),
+		ProtonEmail:          gosettings.CopyPointer(u.ProtonEmail),
+		ProtonPassword:       gosettings.CopyPointer(u.ProtonPassword),
 	}
 }
 
@@ -87,6 +91,7 @@ func (u *Updater) overrideWith(other Updater) {
 	u.Period = gosettings.OverrideWithPointer(u.Period, other.Period)
 	u.MinRatio = gosettings.OverrideWithComparable(u.MinRatio, other.MinRatio)
 	u.Providers = gosettings.OverrideWithSlice(u.Providers, other.Providers)
+	u.PreferDirectDownload = gosettings.OverrideWithPointer(u.PreferDirectDownload, other.PreferDirectDownload)
 	u.ProtonEmail = gosettings.OverrideWithPointer(u.ProtonEmail, other.ProtonEmail)
 	u.ProtonPassword = gosettings.OverrideWithPointer(u.ProtonPassword, other.ProtonPassword)
 }
@@ -104,6 +109,7 @@ func (u *Updater) SetDefaults(vpnProvider string) {
 	}
 
 	// Set these to empty strings to avoid nil pointer panics
+	u.PreferDirectDownload = gosettings.DefaultPointer(u.PreferDirectDownload, false)
 	u.ProtonEmail = gosettings.DefaultPointer(u.ProtonEmail, "")
 	u.ProtonPassword = gosettings.DefaultPointer(u.ProtonPassword, "")
 }
@@ -121,6 +127,7 @@ func (u Updater) toLinesNode() (node *gotree.Node) {
 	node.Appendf("Update period: %s", *u.Period)
 	node.Appendf("Minimum ratio: %.1f", u.MinRatio)
 	node.Appendf("Providers to update: %s", strings.Join(u.Providers, ", "))
+	node.Appendf("Prefer direct download: %s", gosettings.BoolToYesNo(u.PreferDirectDownload))
 	if slices.Contains(u.Providers, providers.Protonvpn) {
 		node.Appendf("Proton API email: %s", *u.ProtonEmail)
 		node.Appendf("Proton API password: %s", gosettings.ObfuscateKey(*u.ProtonPassword))
@@ -141,6 +148,11 @@ func (u *Updater) read(r *reader.Reader) (err error) {
 	}
 
 	u.Providers = r.CSV("UPDATER_VPN_SERVICE_PROVIDERS")
+
+	u.PreferDirectDownload, err = r.BoolPtr("UPDATER_PREFER_DIRECT_DOWNLOAD")
+	if err != nil {
+		return err
+	}
 
 	u.ProtonEmail = r.Get("UPDATER_PROTONVPN_EMAIL")
 	if u.ProtonEmail == nil {

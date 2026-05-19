@@ -132,7 +132,7 @@ func (s *Settings) SetDefaults() {
 	s.IPv6.setDefaults()
 	s.PublicIP.setDefaults()
 	s.Shadowsocks.setDefaults()
-	s.Storage.setDefaults()
+	s.Storage.SetDefaults()
 	s.System.setDefaults()
 	s.Version.setDefaults()
 	s.VPN.setDefaults()
@@ -213,7 +213,7 @@ func (s *Settings) Read(r *reader.Reader, warner Warner) (err error) {
 			return s.PublicIP.read(r, warner)
 		},
 		"shadowsocks": s.Shadowsocks.read,
-		"storage":     s.Storage.read,
+		"storage":     s.Storage.Read,
 		"system":      s.System.read,
 		"updater":     s.Updater.read,
 		"version":     s.Version.read,
