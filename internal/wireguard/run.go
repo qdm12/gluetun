@@ -8,6 +8,7 @@ import (
 
 	"github.com/qdm12/gluetun/internal/cleanup"
 	"github.com/qdm12/gluetun/internal/netlink"
+	gtun "github.com/qdm12/gluetun/internal/tun"
 	"golang.zx2c4.com/wireguard/conn"
 	"golang.zx2c4.com/wireguard/device"
 	"golang.zx2c4.com/wireguard/tun"
@@ -27,15 +28,18 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	}
 
 	setupFunction := setupUserSpace
+	userspace := false
 	switch w.settings.Implementation {
 	case "auto": //nolint:goconst
 		if !kernelSupported {
 			w.logger.Info("Using userspace implementation since Kernel support does not exist")
+			userspace = true
 			break
 		}
 		w.logger.Info("Using available kernelspace implementation")
 		setupFunction = setupKernelSpace
 	case "userspace":
+		userspace = true
 	case "kernelspace":
 		if !kernelSupported {
 			waitError <- errors.New("kernel does not support Wireguard")
@@ -44,6 +48,14 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 		setupFunction = setupKernelSpace
 	default:
 		panic(fmt.Sprintf("unknown implementation %q", w.settings.Implementation))
+	}
+
+	if userspace {
+		err = gtun.Setup()
+		if err != nil {
+			waitError <- fmt.Errorf("setting up userspace tun device: %w", err)
+			return
+		}
 	}
 
 	setup := func(ctx context.Context, cleanups *cleanup.Cleanups) (

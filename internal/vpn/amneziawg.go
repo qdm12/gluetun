@@ -9,6 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/provider"
+	"github.com/qdm12/gluetun/internal/tun"
 	"github.com/qdm12/gluetun/internal/wireguard"
 	"github.com/qdm12/gosettings"
 )
@@ -19,6 +20,11 @@ func setupAmneziaWg(ctx context.Context, netlinker NetLinker,
 	settings settings.VPN, ipv6SupportLevel netlink.IPv6SupportLevel, logger wireguard.Logger) (
 	amneziawger *amneziawg.Amneziawg, connection models.Connection, err error,
 ) {
+	err = tun.Setup()
+	if err != nil {
+		return nil, models.Connection{}, fmt.Errorf("setting up tun device: %w", err)
+	}
+
 	ipv6Internet := ipv6SupportLevel == netlink.IPv6Internet
 	connection, err = providerConf.GetConnection(settings.Provider.ServerSelection, ipv6Internet)
 	if err != nil {

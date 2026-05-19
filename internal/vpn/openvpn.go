@@ -9,6 +9,7 @@ import (
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/openvpn"
 	"github.com/qdm12/gluetun/internal/provider"
+	"github.com/qdm12/gluetun/internal/tun"
 )
 
 // setupOpenVPN sets OpenVPN up using the configurators and settings given.
@@ -18,6 +19,11 @@ func setupOpenVPN(ctx context.Context, fw Firewall,
 	settings settings.VPN, ipv6SupportLevel netlink.IPv6SupportLevel, starter Cmder,
 	logger openvpn.Logger) (runner *openvpn.Runner, connection models.Connection, err error,
 ) {
+	err = tun.Setup()
+	if err != nil {
+		return nil, models.Connection{}, fmt.Errorf("setting up tun device: %w", err)
+	}
+
 	ipv6Internet := ipv6SupportLevel == netlink.IPv6Internet
 	connection, err = providerConf.GetConnection(settings.Provider.ServerSelection, ipv6Internet)
 	if err != nil {

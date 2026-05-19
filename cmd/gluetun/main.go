@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -43,7 +42,6 @@ import (
 	"github.com/qdm12/gluetun/internal/server"
 	"github.com/qdm12/gluetun/internal/shadowsocks"
 	"github.com/qdm12/gluetun/internal/storage"
-	"github.com/qdm12/gluetun/internal/tun"
 	updater "github.com/qdm12/gluetun/internal/updater/loop"
 	"github.com/qdm12/gluetun/internal/updater/resolver"
 	"github.com/qdm12/gluetun/internal/updater/unzip"
@@ -80,7 +78,6 @@ func main() {
 	logger := log.New(log.SetLevel(log.LevelInfo))
 
 	args := os.Args
-	tun := tun.New()
 	netLinkDebugLogger := logger.New(log.SetComponent("netlink"))
 	netLinker := netlink.New(netLinkDebugLogger)
 	cli := cli.New()
@@ -100,7 +97,7 @@ func main() {
 
 	errorCh := make(chan error)
 	go func() {
-		errorCh <- _main(ctx, buildInfo, args, logger, reader, tun, netLinker, cmder, cli)
+		errorCh <- _main(ctx, buildInfo, args, logger, reader, netLinker, cmder, cli)
 	}()
 
 	// Wait for OS signal or run error
@@ -145,7 +142,7 @@ func main() {
 //nolint:gocognit,gocyclo,maintidx
 func _main(ctx context.Context, buildInfo models.BuildInformation,
 	args []string, logger log.LoggerInterface, reader *reader.Reader,
-	tun Tun, netLinker netLinker, cmder RunStarter,
+	netLinker netLinker, cmder RunStarter,
 	cli clier,
 ) error {
 	if len(args) > 1 { // cli operation
@@ -340,19 +337,6 @@ func _main(ctx context.Context, buildInfo models.BuildInformation,
 	err = routingConf.AddLocalRules(localNetworks)
 	if err != nil {
 		return fmt.Errorf("adding local rules: %w", err)
-	}
-
-	const tunDevice = "/dev/net/tun"
-	err = tun.Check(tunDevice)
-	if err != nil {
-		if !errors.Is(err, os.ErrNotExist) {
-			return fmt.Errorf("checking TUN device: %w (see the Wiki errors/tun page)", err)
-		}
-		logger.Info(err.Error() + "; creating it...")
-		err = tun.Create(tunDevice)
-		if err != nil {
-			return fmt.Errorf("creating tun device: %w", err)
-		}
 	}
 
 	for _, port := range allSettings.Firewall.InputPorts {
@@ -624,11 +608,6 @@ type clier interface {
 	HealthCheck(ctx context.Context, reader *reader.Reader, warner cli.Warner) error
 	Update(ctx context.Context, args []string, logger cli.UpdaterLogger) error
 	GenKey(args []string) error
-}
-
-type Tun interface {
-	Check(tunDevice string) error
-	Create(tunDevice string) error
 }
 
 type RunStarter interface {
