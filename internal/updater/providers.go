@@ -27,11 +27,12 @@ func (u *Updater) updateProvider(ctx context.Context, provider Provider,
 	var servers []models.Server
 	if manifest.providerToFilepath == nil {
 		servers, err = provider.FetchServers(ctx, minServers)
-		if err != nil {
-			if errors.Is(err, common.ErrNotEnoughServers) {
-				u.logger.Warn("note: if running the update manually, you can use the flag " +
-					"-minratio to allow the update to succeed with less servers found")
-			}
+		switch {
+		case errors.Is(err, common.ErrNotEnoughServers):
+			u.logger.Warn("note: if running the update manually, you can use the flag " +
+				"-minratio to allow the update to succeed with less servers found")
+			fallthrough
+		case err != nil:
 			return fmt.Errorf("getting %s servers: %w", providerName, err)
 		}
 	} else {
@@ -43,6 +44,7 @@ func (u *Updater) updateProvider(ctx context.Context, provider Provider,
 		if err != nil {
 			return fmt.Errorf("downloading provider file %s: %w", providerFileURL, err)
 		}
+		servers = data.Servers
 		if len(servers) < minServers {
 			return fmt.Errorf("provider %s has not enough servers from downloaded file: got %d and expected at least %d",
 				providerName, len(servers), minServers)
