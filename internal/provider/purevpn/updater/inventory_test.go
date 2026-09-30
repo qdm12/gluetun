@@ -47,8 +47,9 @@ func Test_parseInventoryJSON(t *testing.T) {
 				{"id":11,"ip":"5.6.7.8"}
 			],
 			"dns":[
-				{"id":101,"hostname":"aa2-tcp.ptoserver.com","type":"primary","configuration_version":"2.0","tags":["p2p"]},
-				{"id":102,"hostname":"aa2-udp.ptoserver.com","type":"primary","configuration_version":"14.0"}
+				{"id":101,"hostname":"aa2-tcp.ptoserver.com","type":"primary"},
+				{"id":102,"hostname":"aa2-udp.ptoserver.com","type":"primary"},
+				{"id":103,"hostname":"aa2-obf-udp.ptoserver.com","type":"primary"}
 			],
 			"countries":[
 				{
@@ -56,7 +57,9 @@ func Test_parseInventoryJSON(t *testing.T) {
 					"data_centers":[{"id":10},{"id":11}],
 					"protocols":[
 						{"protocol":"TCP","dns":[{"dns_id":101,"port_number":80}]},
-						{"protocol":"UDP","dns":[{"dns_id":102,"port_number":15021}]}
+						{"protocol":"UDP","dns":[{"dns_id":102,"port_number":15021}]},
+						{"protocol":"UDP","dns":[{"dns_id":103,"port_number":5565}]},
+						{"protocol":"IKEV","dns":[{"dns_id":101,"port_number":0}]}
 					]
 				}
 			]
@@ -89,38 +92,51 @@ func Test_parseInventoryJSON(t *testing.T) {
 		IPs:        []netip.Addr{netip.MustParseAddr("1.2.3.4"), netip.MustParseAddr("5.6.7.8")},
 	}
 	assert.Equal(t, expectedServerUDP, serverUDP)
+
+	serverObfuscated := hts["aa2-obf-udp.ptoserver.com"]
+	expectedServerObfuscated := models.Server{
+		Hostname:   "aa2-obf-udp.ptoserver.com",
+		VPN:        vpn.OpenVPN,
+		UDP:        true,
+		UDPPorts:   []uint16{5565},
+		Obfuscated: true,
+		Categories: []string{"p2p"},
+		IPs:        []netip.Addr{netip.MustParseAddr("1.2.3.4"), netip.MustParseAddr("5.6.7.8")},
+	}
+	assert.Equal(t, expectedServerObfuscated, serverObfuscated)
 }
 
-func Test_hasP2PTag(t *testing.T) {
+func Test_hasP2PFeature(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		tags     []string
-		expected bool
+		features []string
+		hasP2P   bool
 	}{
-		"empty": {
-			tags:     nil,
-			expected: false,
+		"none": {
+			features: nil,
 		},
-		"no_p2p_tag": {
-			tags:     []string{"TAG_QR", "TAG_OVPN_OBF"},
-			expected: false,
+		"other_features": {
+			features: []string{"QR", "OVPN_OBF", "PF"},
 		},
-		"p2p_tag": {
-			tags:     []string{"p2p"},
-			expected: true,
+		"p2p": {
+			features: []string{"p2p"},
+			hasP2P:   true,
 		},
-		"p2p_tag_with_different_case": {
-			tags:     []string{"TAG_P2P"},
-			expected: true,
+		"p2p_with_other_features": {
+			features: []string{"QR", "p2p", "PF"},
+			hasP2P:   true,
 		},
-		"p2p_tag_with_dash": {
-			tags:     []string{"tag-p2p"},
-			expected: true,
+		"p2p_in_uppercase": {
+			features: []string{"P2P"},
+			hasP2P:   true,
 		},
-		"p2p_tag_with_space": {
-			tags:     []string{"tag p2p"},
-			expected: true,
+		"p2p_with_spaces": {
+			features: []string{" p2p "},
+			hasP2P:   true,
+		},
+		"p2p_as_a_substring": {
+			features: []string{"tag_p2p"},
 		},
 	}
 
@@ -128,9 +144,9 @@ func Test_hasP2PTag(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			result := hasP2PTag(testCase.tags)
+			hasP2P := hasP2PFeature(testCase.features)
 
-			assert.Equal(t, testCase.expected, result)
+			assert.Equal(t, testCase.hasP2P, hasP2P)
 		})
 	}
 }

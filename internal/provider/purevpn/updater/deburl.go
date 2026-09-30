@@ -40,7 +40,9 @@ func fetchDebURL(ctx context.Context, client *http.Client) (debURL string, err e
 	return debURL, nil
 }
 
-func fetchURL(ctx context.Context, client *http.Client, rawURL string) (content []byte, err error) {
+// fetchURL performs a GET request and returns the response body,
+// which the caller is responsible for closing.
+func fetchURL(ctx context.Context, client *http.Client, rawURL string) (body io.ReadCloser, err error) {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, rawURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
@@ -50,17 +52,13 @@ func fetchURL(ctx context.Context, client *http.Client, rawURL string) (content 
 	if err != nil {
 		return nil, fmt.Errorf("performing request: %w", err)
 	}
-	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
+		response.Body.Close()
 		return nil, fmt.Errorf("HTTP status code %d", response.StatusCode)
 	}
 
-	content, err = io.ReadAll(response.Body)
-	if err != nil {
-		return nil, fmt.Errorf("reading response body: %w", err)
-	}
-	return content, nil
+	return response.Body, nil
 }
 
 var (

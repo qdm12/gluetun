@@ -1,14 +1,16 @@
 package updater
 
 import (
-	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"sort"
 
 	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/provider/common"
 )
+
+var errFileNotFound = errors.New("file not found in the application archive")
 
 func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	servers []models.Server, err error,
@@ -18,24 +20,31 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		return nil, fmt.Errorf("fetching .deb URL: %w", err)
 	}
 
-	debContent, err := fetchURL(ctx, u.client, debURL)
+	debBody, err := fetchURL(ctx, u.client, debURL)
 	if err != nil {
-		return nil, fmt.Errorf("fetching PureVPN .deb file %q: %w", debURL, err)
+		return nil, fmt.Errorf("fetching PureVPN .deb file: %w", err)
 	}
+	defer debBody.Close()
 
-	asarContent, err := extractAsarFromDeb(debContent)
-	if err != nil {
-		return nil, fmt.Errorf("extracting app.asar from .deb: %w", err)
-	}
-
+	// The file layout of the Electron application archive varies between
+	// PureVPN application versions, hence the several candidate paths.
 	const (
-		asarUtilsEndpointsPath     = "node_modules/atom-sdk/node_modules/utils/lib/constants/end-points.js"
-		asarInventoryEndpointsPath = "node_modules/atom-sdk/node_modules/inventory/lib/constants/end-points.js"
+		appEndpointsPath        = "node_modules/atom-sdk/node_modules/utils/lib/constants/end-points.js"
+		inventoryEndpointsPath  = "node_modules/atom-sdk/node_modules/inventory/lib/constants/end-points.js"
+		inventoryOfflinePath    = "node_modules/atom-sdk/node_modules/inventory/lib/offline-data/inventory-data.js"
+		inventoryOfflineSrcPath = "node_modules/atom-sdk/node_modules/inventory/src/offline-data/inventory-data.js"
 	)
-	endpointsContent, endpointsPath, err := extractFirstFileFromAsar(asarContent,
-		asarUtilsEndpointsPath, asarInventoryEndpointsPath)
+	files, err := extractFilesFromDeb(debBody,
+		appEndpointsPath, inventoryEndpointsPath,
+		inventoryOfflinePath, inventoryOfflineSrcPath, localDataAsarPath)
 	if err != nil {
-		return nil, fmt.Errorf("extracting inventory endpoints file from app.asar: %w", err)
+		return nil, fmt.Errorf("extracting files from PureVPN .deb file: %w", err)
+	}
+
+	endpointsContent, endpointsPath, err := firstFile(files,
+		appEndpointsPath, inventoryEndpointsPath)
+	if err != nil {
+		return nil, fmt.Errorf("extracting inventory endpoints: %w", err)
 	}
 
 	inventoryURLTemplate, err := parseInventoryURLTemplate(endpointsContent)
@@ -43,19 +52,15 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		return nil, fmt.Errorf("parsing inventory URL template from %q: %w", endpointsPath, err)
 	}
 
-	const (
-		asarSrcInventoryDataPath = "node_modules/atom-sdk/node_modules/inventory/src/offline-data/inventory-data.js"
-		asarLibInventoryDataPath = "node_modules/atom-sdk/node_modules/inventory/lib/offline-data/inventory-data.js"
-	)
-	offlineInventoryContent, offlineInventoryPath, err := extractFirstFileFromAsar(asarContent,
-		asarLibInventoryDataPath, asarSrcInventoryDataPath)
+	offlineContent, offlinePath, err := firstFile(files,
+		inventoryOfflinePath, inventoryOfflineSrcPath)
 	if err != nil {
-		return nil, fmt.Errorf("extracting inventory offline data from app.asar: %w", err)
+		return nil, fmt.Errorf("extracting inventory offline data: %w", err)
 	}
 
-	resellerUID, err := parseResellerUIDFromInventoryOffline(offlineInventoryContent)
+	resellerUID, err := parseResellerUIDFromInventoryOffline(offlineContent)
 	if err != nil {
-		return nil, fmt.Errorf("parsing reseller UID from %q: %w", offlineInventoryPath, err)
+		return nil, fmt.Errorf("parsing reseller UID from %q: %w", offlinePath, err)
 	}
 
 	inventoryURL, err := buildInventoryURL(inventoryURLTemplate, resellerUID)
@@ -63,26 +68,21 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		return nil, fmt.Errorf("building inventory URL: %w", err)
 	}
 
-	inventoryContent, err := fetchURL(ctx, u.client, inventoryURL)
+	inventoryBody, err := fetchURL(ctx, u.client, inventoryURL)
 	if err != nil {
-		return nil, fmt.Errorf("fetching inventory JSON %q: %w", inventoryURL, err)
+		return nil, fmt.Errorf("fetching inventory JSON: %w", err)
 	}
+	defer inventoryBody.Close()
 
-	hts, err := parseInventoryJSON(bytes.NewReader(inventoryContent))
+	hts, err := parseInventoryJSON(inventoryBody)
 	if err != nil {
 		return nil, fmt.Errorf("parsing inventory JSON from %q: %w", inventoryURL, err)
 	}
 
-	localDataContent, err := extractFileFromAsar(asarContent, localDataAsarPath)
-	if err != nil {
-		u.logger.Warn(fmt.Sprintf("extracting app-bundled local data from app.asar: %v", err))
+	if localHTS, err := parseLocalDataFromFiles(files); err != nil {
+		u.logger.Warn(fmt.Sprintf("not using app-bundled local data as fallback: %v", err))
 	} else {
-		localHTS, parseErr := parseLocalData(localDataContent)
-		if parseErr != nil {
-			u.logger.Warn(fmt.Sprintf("parsing app-bundled local data: %v", parseErr))
-		} else {
-			hts.mergeWithFallback(localHTS)
-		}
+		hts.mergeWithFallback(localHTS)
 	}
 
 	if len(hts) < minServers {
@@ -100,7 +100,6 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 		return nil, err
 	}
 
-	// override IPs with the ones found in [resolveWithMultipleResolvers]
 	hts.adaptWithIPs(hostToIPs)
 
 	if len(hts) < minServers {
@@ -108,25 +107,43 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 			common.ErrNotEnoughServers, len(hts), minServers)
 	}
 
-	servers = hts.toServersSlice()
-
-	for i := 0; i < len(servers); i++ {
-		country, city, warnings := parseHostname(servers[i].Hostname)
-		for _, warning := range warnings {
-			u.logger.Warn(warning)
-		}
-		if country == "" && city == "" {
-			servers[i], servers[len(servers)-1] = servers[len(servers)-1], servers[i]
-			servers = servers[:len(servers)-1]
-			i--
-			continue
-		}
-		servers[i].Country = country
-		servers[i].City = city
-		servers[i].Region = getRegionFromCountryCity(country, city) // TODO v4: retro-compatibility, remove this
-	}
+	servers = u.withLocations(hts.toServersSlice())
 
 	sort.Sort(models.SortableServers(servers))
 
 	return servers, nil
+}
+
+// withLocations sets the country, city and region of each server based on
+// the location codes contained in its hostname, and discards any server
+// for which no location could be found.
+func (u *Updater) withLocations(servers []models.Server) (kept []models.Server) {
+	kept = make([]models.Server, 0, len(servers))
+	for _, server := range servers {
+		country, city, warnings := parseHostname(server.Hostname)
+		for _, warning := range warnings {
+			u.logger.Warn(warning)
+		}
+		if country == "" && city == "" {
+			continue
+		}
+		server.Country = country
+		server.City = city
+		// TODO v4: retro-compatibility, remove this
+		server.Region = getRegionFromCountryCity(country, city)
+		kept = append(kept, server)
+	}
+	return kept
+}
+
+// firstFile returns the content of the first path present in the files,
+// along with the path used.
+func firstFile(files map[string][]byte, paths ...string) (content []byte, usedPath string, err error) {
+	for _, path := range paths {
+		content, ok := files[path]
+		if ok {
+			return content, path, nil
+		}
+	}
+	return nil, "", fmt.Errorf("%w: none of %q", errFileNotFound, paths)
 }

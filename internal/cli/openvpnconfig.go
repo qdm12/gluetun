@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/qdm12/gluetun/internal/configuration/settings"
-	"github.com/qdm12/gluetun/internal/models"
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/qdm12/gluetun/internal/openvpn/extract"
 	"github.com/qdm12/gluetun/internal/provider"
@@ -30,12 +29,6 @@ type Unzipper interface {
 type ParallelResolver interface {
 	Resolve(ctx context.Context, settings resolver.ParallelSettings) (
 		hostToIPs map[string][]netip.Addr, warnings []string, err error)
-}
-
-type IPFetcher interface {
-	String() string
-	CanFetchAnyIP() bool
-	FetchInfo(ctx context.Context, ip netip.Addr) (data models.PublicIP, err error)
 }
 
 type IPv6Checker interface {

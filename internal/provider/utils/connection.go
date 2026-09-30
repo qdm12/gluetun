@@ -73,19 +73,19 @@ func GetConnection(provider string,
 			slices.SortStableFunc(server.IPs, ipv6First(netip.Addr.Is6))
 		}
 
+		port := getPort(selection, server, defaults.OpenVPNTCPPort,
+			defaults.OpenVPNUDPPort, defaults.WireguardPort)
+
+		hostname := server.Hostname
+		if selection.VPN == vpn.OpenVPN && server.OvpnX509 != "" {
+			// For Windscribe where hostname and
+			// OpenVPN x509 are not the same.
+			hostname = server.OvpnX509
+		}
+
 		for _, ip := range server.IPs {
 			if !ipv6Supported && ip.Is6() {
 				continue
-			}
-
-			port := getPort(selection, server, defaults.OpenVPNTCPPort,
-				defaults.OpenVPNUDPPort, defaults.WireguardPort)
-
-			hostname := server.Hostname
-			if selection.VPN == vpn.OpenVPN && server.OvpnX509 != "" {
-				// For Windscribe where hostname and
-				// OpenVPN x509 are not the same.
-				hostname = server.OvpnX509
 			}
 
 			connection := models.Connection{

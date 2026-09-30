@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/netip"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -11,6 +12,16 @@ import (
 )
 
 const localDataAsarPath = "node_modules/atom-sdk/lib/offline-data/local-data.js"
+
+// parseLocalDataFromFiles parses the local data bundled with the PureVPN
+// application, used as a fallback for hosts missing from the online inventory.
+func parseLocalDataFromFiles(files map[string][]byte) (hostToServer, error) {
+	content, ok := files[localDataAsarPath]
+	if !ok {
+		return nil, fmt.Errorf("%w: %s", errFileNotFound, localDataAsarPath)
+	}
+	return parseLocalData(content)
+}
 
 func parseLocalData(data []byte) (hostToServer, error) {
 	content := string(data)
@@ -108,7 +119,9 @@ func parseLocalDataIPs(content string) (hostToIPs map[string][]netip.Addr) {
 				if !ok {
 					continue
 				}
-				hostToIPs[host] = appendIfMissing(hostToIPs[host], ip)
+				if !slices.Contains(hostToIPs[host], ip) {
+					hostToIPs[host] = append(hostToIPs[host], ip)
+				}
 			}
 		}
 	}
@@ -242,7 +255,9 @@ func parseCountryDataCenterIDs(countryEntry string) (ids []int) {
 		if id == 0 {
 			continue
 		}
-		ids = appendIfMissing(ids, id)
+		if !slices.Contains(ids, id) {
+			ids = append(ids, id)
+		}
 	}
 	return ids
 }
@@ -278,7 +293,9 @@ func parseTCPUDPHostsFromChunk(chunk string) (hosts []string) {
 			if !ok {
 				continue
 			}
-			hosts = appendIfMissing(hosts, host)
+			if !slices.Contains(hosts, host) {
+				hosts = append(hosts, host)
+			}
 		}
 	}
 	return hosts
@@ -328,13 +345,4 @@ func parseID(s string) (id int) {
 	}
 	id, _ = strconv.Atoi(match[1])
 	return id
-}
-
-func appendIfMissing[T comparable](values []T, value T) []T {
-	for _, existing := range values {
-		if existing == value {
-			return values
-		}
-	}
-	return append(values, value)
 }

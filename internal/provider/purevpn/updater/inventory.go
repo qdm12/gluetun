@@ -25,16 +25,16 @@ func parseInventoryURLTemplate(endpointsJS []byte) (template string, err error) 
 
 	baseMatch := baseURLBPCRegex.FindStringSubmatch(raw)
 	if len(baseMatch) != 2 { //nolint:mnd
-		return "", fmt.Errorf("BASE_URL_BPC not found in endpoints file")
+		return "", errors.New("BASE_URL_BPC not found in endpoints file")
 	}
 	baseURL := strings.TrimSpace(baseMatch[1])
 	if baseURL == "" {
-		return "", fmt.Errorf("BASE_URL_BPC is empty")
+		return "", errors.New("BASE_URL_BPC is empty")
 	}
 
 	pathMatch := inventoryPathRegex.FindString(raw)
 	if pathMatch == "" {
-		return "", fmt.Errorf("inventory path not found in endpoints file")
+		return "", errors.New("inventory path not found in endpoints file")
 	}
 	// Strip surrounding quotes from the JS string literal.
 	path := strings.Trim(pathMatch, `"`)
@@ -49,59 +49,64 @@ func parseResellerUIDFromInventoryOffline(offlineInventoryJS []byte) (resellerUI
 		match = resellerUIDRegexJS.FindStringSubmatch(raw)
 	}
 	if len(match) != 2 { //nolint:mnd
-		return "", fmt.Errorf("reseller Uid not found in inventory offline data")
+		return "", errors.New("reseller Uid not found in inventory offline data")
 	}
 	resellerUID = strings.TrimSpace(match[1])
 	if resellerUID == "" {
-		return "", fmt.Errorf("reseller Uid is empty")
+		return "", errors.New("reseller Uid is empty")
 	}
 	return resellerUID, nil
 }
 
 func buildInventoryURL(template, resellerUID string) (inventoryURL string, err error) {
 	if template == "" {
-		return "", fmt.Errorf("inventory URL template is empty")
+		return "", errors.New("inventory URL template is empty")
 	}
 	if resellerUID == "" {
-		return "", fmt.Errorf("reseller UID is empty")
+		return "", errors.New("reseller UID is empty")
 	}
 	if !strings.Contains(template, "{resellerUid}") {
-		return "", fmt.Errorf("inventory URL template does not contain {resellerUid}")
+		return "", errors.New("inventory URL template does not contain {resellerUid}")
 	}
 	return strings.Replace(template, "{resellerUid}", resellerUID, 1), nil
 }
 
 type inventoryResponse struct {
-	Body struct {
-		Countries []struct {
-			DataCenters []struct {
-				ID uint `json:"id"`
-			} `json:"data_centers"`
-			Protocols []struct {
-				Protocol string `json:"protocol"`
-				DNS      []struct {
-					DNSID      uint   `json:"dns_id"`
-					PortNumber uint16 `json:"port_number"`
-				} `json:"dns"`
-			} `json:"protocols"`
-			Features []string `json:"features"`
-		} `json:"countries"`
-		DNS []struct {
-			ID                   uint     `json:"id"`
-			Hostname             string   `json:"hostname"`
-			ConfigurationVersion string   `json:"configuration_version"`
-			Tags                 []string `json:"tags"`
-		} `json:"dns"`
-		DataCenters []struct {
-			ID uint       `json:"id"`
-			IP netip.Addr `json:"ip"`
-		} `json:"data_centers"`
-	} `json:"body"`
+	Body inventoryBody `json:"body"`
 }
 
-type dnsData struct {
-	hostname string
-	p2p      bool
+type inventoryBody struct {
+	Countries   []inventoryCountry    `json:"countries"`
+	DNS         []inventoryDNS        `json:"dns"`
+	DataCenters []inventoryDataCenter `json:"data_centers"`
+}
+
+type inventoryCountry struct {
+	DataCenters []struct {
+		ID uint `json:"id"`
+	} `json:"data_centers"`
+	Protocols []inventoryProtocol `json:"protocols"`
+	// Features are the network features available in the country, for
+	// example `p2p`, `PF`, `QR` or `OVPN_OBF`.
+	Features []string `json:"features"`
+}
+
+type inventoryProtocol struct {
+	Protocol string `json:"protocol"`
+	DNS      []struct {
+		DNSID      uint   `json:"dns_id"`
+		PortNumber uint16 `json:"port_number"`
+	} `json:"dns"`
+}
+
+type inventoryDNS struct {
+	ID       uint   `json:"id"`
+	Hostname string `json:"hostname"`
+}
+
+type inventoryDataCenter struct {
+	ID uint       `json:"id"`
+	IP netip.Addr `json:"ip"`
 }
 
 func parseInventoryJSON(reader io.Reader) (hts hostToServer, err error) {
@@ -110,71 +115,78 @@ func parseInventoryJSON(reader io.Reader) (hts hostToServer, err error) {
 	err = decoder.Decode(&response)
 	if err != nil {
 		return nil, fmt.Errorf("decoding inventory JSON: %w", err)
-	} else if len(response.Body.Countries) == 0 {
+	}
+	if len(response.Body.Countries) == 0 {
 		return nil, errors.New("no countries found in inventory JSON")
 	}
 
-	dnsIDToData := getDNSIDToData(response)
-	dataCenterIDToIP := getDataCenterIDToIP(response)
+	dnsIDToHostname := getDNSIDToHostname(response.Body.DNS)
+	dataCenterIDToIP := getDataCenterIDToIP(response.Body.DataCenters)
 
 	hts = make(hostToServer)
 	for _, country := range response.Body.Countries {
-		countryP2PTagged := hasP2PTag(country.Features)
-		countryDataCenterIPs := make([]netip.Addr, 0, len(country.DataCenters))
+		// Each hostname of the country is served by all its data centers.
+		dataCenterIPs := make([]netip.Addr, 0, len(country.DataCenters))
 		for _, dataCenterRef := range country.DataCenters {
 			ip, ok := dataCenterIDToIP[dataCenterRef.ID]
-			if !ok {
+			if !ok || slices.Contains(dataCenterIPs, ip) {
 				continue
 			}
-			countryDataCenterIPs = appendIfMissing(countryDataCenterIPs, ip)
+			dataCenterIPs = append(dataCenterIPs, ip)
 		}
 
+		p2p := hasP2PFeature(country.Features)
 		for _, protocol := range country.Protocols {
-			tcp := strings.EqualFold(protocol.Protocol, constants.TCP)
-			udp := strings.EqualFold(protocol.Protocol, constants.UDP)
-			if !tcp && !udp {
-				continue
-			}
-
-			for _, dns := range protocol.DNS {
-				data, ok := dnsIDToData[dns.DNSID]
-				if !ok {
-					continue
-				}
-
-				var tcpPorts, udpPorts []uint16
-				if tcp {
-					tcpPorts = []uint16{dns.PortNumber} // always 80
-				}
-				if udp {
-					udpPorts = []uint16{dns.PortNumber}
-				}
-				p2pTagged := countryP2PTagged || data.p2p
-				hts.add(data.hostname, countryDataCenterIPs, tcp, udp, tcpPorts, udpPorts, p2pTagged)
-			}
+			hts.addProtocolServers(protocol, dnsIDToHostname, dataCenterIPs, p2p)
 		}
 	}
 
 	return hts, nil
 }
 
-func getDNSIDToData(response inventoryResponse) (dnsIDToData map[uint]dnsData) {
-	dnsIDToData = make(map[uint]dnsData, len(response.Body.DNS))
-	for _, dnsEntry := range response.Body.DNS {
+// addProtocolServers adds a server for each hostname of the protocol, served
+// on the port of the protocol. Only TCP and UDP are handled since only
+// OpenVPN is supported by this updater.
+func (hts hostToServer) addProtocolServers(protocol inventoryProtocol,
+	dnsIDToHostname map[uint]string, dataCenterIPs []netip.Addr, p2p bool,
+) {
+	tcp := strings.EqualFold(protocol.Protocol, constants.TCP)
+	udp := strings.EqualFold(protocol.Protocol, constants.UDP)
+	if !tcp && !udp {
+		return
+	}
+
+	for _, dns := range protocol.DNS {
+		hostname, ok := dnsIDToHostname[dns.DNSID]
+		if !ok || hostname == "" {
+			continue
+		}
+
+		var tcpPorts, udpPorts []uint16
+		if tcp {
+			tcpPorts = []uint16{dns.PortNumber} // always 80
+		}
+		if udp {
+			udpPorts = []uint16{dns.PortNumber} // 53, 5565 or 15021
+		}
+		hts.add(hostname, dataCenterIPs, tcp, udp, tcpPorts, udpPorts, p2p)
+	}
+}
+
+func getDNSIDToHostname(dnsEntries []inventoryDNS) (dnsIDToHostname map[uint]string) {
+	dnsIDToHostname = make(map[uint]string, len(dnsEntries))
+	for _, dnsEntry := range dnsEntries {
 		if dnsEntry.ID == 0 || dnsEntry.Hostname == "" {
 			continue
 		}
-		dnsIDToData[dnsEntry.ID] = dnsData{
-			hostname: strings.TrimSpace(dnsEntry.Hostname),
-			p2p:      hasP2PTag(dnsEntry.Tags),
-		}
+		dnsIDToHostname[dnsEntry.ID] = strings.TrimSpace(dnsEntry.Hostname)
 	}
-	return dnsIDToData
+	return dnsIDToHostname
 }
 
-func getDataCenterIDToIP(response inventoryResponse) (dataCenterIDToIP map[uint]netip.Addr) {
-	dataCenterIDToIP = make(map[uint]netip.Addr, len(response.Body.DataCenters))
-	for _, dataCenter := range response.Body.DataCenters {
+func getDataCenterIDToIP(dataCenters []inventoryDataCenter) (dataCenterIDToIP map[uint]netip.Addr) {
+	dataCenterIDToIP = make(map[uint]netip.Addr, len(dataCenters))
+	for _, dataCenter := range dataCenters {
 		if dataCenter.ID == 0 || !dataCenter.IP.IsValid() {
 			continue
 		}
@@ -183,27 +195,8 @@ func getDataCenterIDToIP(response inventoryResponse) (dataCenterIDToIP map[uint]
 	return dataCenterIDToIP
 }
 
-func hasP2PTag(tags []string) (p2p bool) {
-	separatorNormalizer := strings.NewReplacer("-", "_", " ", "_")
-	for _, tag := range tags {
-		normalized := strings.ToLower(strings.TrimSpace(tag))
-		normalized = separatorNormalizer.Replace(normalized)
-		if slices.Contains(strings.Split(normalized, "_"), "p2p") {
-			return true
-		}
-	}
-	return false
-}
-
-func extractFirstFileFromAsar(asarContent []byte, paths ...string) (content []byte, usedPath string, err error) {
-	var lastErr error
-	for _, path := range paths {
-		content, err = extractFileFromAsar(asarContent, path)
-		if err == nil {
-			return content, path, nil
-		}
-		lastErr = err
-	}
-
-	return nil, "", fmt.Errorf("extracting from app.asar failed for paths %q: %w", paths, lastErr)
+func hasP2PFeature(features []string) (p2p bool) {
+	return slices.ContainsFunc(features, func(feature string) bool {
+		return strings.EqualFold(strings.TrimSpace(feature), "p2p")
+	})
 }

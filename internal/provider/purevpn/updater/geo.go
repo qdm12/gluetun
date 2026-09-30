@@ -38,25 +38,31 @@ var countryCityCodeToCityName = map[string]string{
 }
 
 func parseHostname(hostname string) (country, city string, warnings []string) {
-	const minHostnameLength = 2 + 3 + 2 // 2 country code + 3 city code + "2-"
-	if len(hostname) < minHostnameLength {
-		warnings = append(warnings,
-			fmt.Sprintf("hostname %q is too short to parse country and city codes", hostname))
+	const (
+		countryCodeLength = 2
+		// Location codes are followed by a number and a dash, for example
+		// `us2-udp.ptoserver.com` or `usva2-tcp.ptoserver.com`.
+		locationSeparator = "2-"
+	)
+
+	if len(hostname) < countryCodeLength {
+		return "", "", append(warnings,
+			fmt.Sprintf("hostname %q is too short to contain a country code", hostname))
 	}
-	countryCode := strings.ToLower(hostname[0:2])
+	countryCode := strings.ToLower(hostname[:countryCodeLength])
 	country, ok := countryCodeToName[countryCode]
 	if !ok {
 		warnings = append(warnings, fmt.Sprintf("unknown country code %q in hostname %q",
 			countryCode, hostname))
 	}
 
-	twoMinusIndex := strings.Index(hostname, "2-")
+	twoMinusIndex := strings.Index(hostname, locationSeparator)
 	switch twoMinusIndex {
 	case -1:
 		warnings = append(warnings,
-			fmt.Sprintf("hostname %q does not contain '2-'", hostname))
+			fmt.Sprintf("hostname %q does not contain %q", hostname, locationSeparator))
 		return country, city, warnings
-	case 2: //nolint:mnd
+	case countryCodeLength:
 		// no city code
 		return country, "", warnings
 	}

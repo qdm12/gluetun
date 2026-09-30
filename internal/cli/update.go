@@ -44,7 +44,8 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 		"Minimum ratio of servers to find for the update to succeed")
 	flagSet.BoolVar(&updateAll, "all", false, "Update servers for all VPN providers")
 	flagSet.StringVar(&csvProviders, "providers", "", "CSV string of VPN providers to update server data for")
-	flagSet.StringVar(&ipToken, "ip-token", "", "IP data service token (e.g. ipinfo.io) to use")
+	flagSet.StringVar(&ipToken, "ip-token", "",
+		"no longer used, the server updater no longer needs IP geolocation data")
 	flagSet.StringVar(&protonUsername, "proton-username", "",
 		"(Retro-compatibility) Username to use to authenticate with Proton. Use -proton-email instead.") // v4 remove this
 	flagSet.StringVar(&protonEmail, "proton-email", "", "Email to use to authenticate with Proton")
@@ -63,6 +64,8 @@ func (c *CLI) Update(ctx context.Context, args []string, logger UpdaterLogger) e
 	switch {
 	case dnsServer != "":
 		logger.Warn("The -dns flag is no longer used, your DNS will use DoH with Cloudflare and Google")
+	case ipToken != "":
+		logger.Warn("The -ip-token flag is no longer used, the server updater no longer needs IP geolocation data")
 	case endUserMode:
 		logger.Warn("The -enduser flag is now unused")
 	case maintainerMode:

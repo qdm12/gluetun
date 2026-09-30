@@ -6,36 +6,35 @@ import (
 	"github.com/qdm12/gluetun/internal/constants"
 	"github.com/qdm12/gluetun/internal/constants/providers"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func Test_OpenVPNSelection_validate(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
-		selection  OpenVPNSelection
-		provider   string
+		protocol   string
+		customPort uint16
 		errMessage string
 	}{
-		"purevpn_default_selection_valid": {
-			selection: openVPNSelectionForValidation(providers.Purevpn),
-			provider:  providers.Purevpn,
+		"default_udp_no_custom_port": {},
+		"tcp_no_custom_port": {
+			protocol: constants.TCP,
 		},
-		"purevpn_TCP_without_custom_port_valid": {
-			selection: func() OpenVPNSelection {
-				s := openVPNSelectionForValidation(providers.Purevpn)
-				s.Protocol = constants.TCP
-				return s
-			}(),
-			provider: providers.Purevpn,
+		"udp_custom_port_allowed": {
+			customPort: 15021,
 		},
-		"purevpn_custom_port_accepted": {
-			selection: func() OpenVPNSelection {
-				s := openVPNSelectionForValidation(providers.Purevpn)
-				*s.CustomPort = 1194
-				return s
-			}(),
-			provider: providers.Purevpn,
+		"tcp_custom_port_allowed": {
+			protocol:   constants.TCP,
+			customPort: 443,
+		},
+		"udp_custom_port_denied": {
+			customPort: 5565,
+			errMessage: "custom endpoint port is not allowed: for VPN service provider purevpn",
+		},
+		"tcp_custom_port_denied": {
+			protocol:   constants.TCP,
+			customPort: 8080,
+			errMessage: "custom endpoint port is not allowed: for VPN service provider purevpn",
 		},
 	}
 
@@ -43,19 +42,20 @@ func Test_OpenVPNSelection_validate(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			err := testCase.selection.validate(testCase.provider)
-			if testCase.errMessage == "" {
-				require.NoError(t, err)
-			} else {
-				require.Error(t, err)
-				assert.Contains(t, err.Error(), testCase.errMessage)
+			selection := OpenVPNSelection{}
+			selection.setDefaults(providers.Purevpn)
+			if testCase.protocol != "" {
+				selection.Protocol = testCase.protocol
 			}
+			selection.CustomPort = new(testCase.customPort)
+
+			err := selection.validate(providers.Purevpn)
+
+			if testCase.errMessage == "" {
+				assert.NoError(t, err)
+				return
+			}
+			assert.ErrorContains(t, err, testCase.errMessage)
 		})
 	}
-}
-
-func openVPNSelectionForValidation(provider string) OpenVPNSelection {
-	selection := OpenVPNSelection{}
-	selection.setDefaults(provider)
-	return selection
 }

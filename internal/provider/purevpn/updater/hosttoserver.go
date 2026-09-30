@@ -10,32 +10,40 @@ import (
 
 type hostToServer map[string]models.Server
 
-func (hts hostToServer) add(host string, ips []netip.Addr, tcp, udp bool, tcpPorts, udpPorts []uint16, p2pTagged bool) {
+func (hts hostToServer) add(host string, ips []netip.Addr, tcp, udp bool, tcpPorts, udpPorts []uint16, p2p bool) {
+	const p2pCategory = "p2p"
+
 	server, ok := hts[host]
 	if !ok {
 		server.VPN = vpn.OpenVPN
 		server.Hostname = host
 	}
 	for _, ip := range ips {
-		server.IPs = appendIfMissing(server.IPs, ip)
+		if !slices.Contains(server.IPs, ip) {
+			server.IPs = append(server.IPs, ip)
+		}
 	}
-	portForward, quantumResistant, obfuscated, p2pInHost := inferPureVPNTraits(host)
+	portForward, quantumResistant, obfuscated, p2pInHostname := inferPureVPNTraits(host)
 	server.PortForward = server.PortForward || portForward
 	server.QuantumResistant = server.QuantumResistant || quantumResistant
 	server.Obfuscated = server.Obfuscated || obfuscated
-	if p2pTagged || p2pInHost {
-		server.Categories = appendIfMissing(server.Categories, "p2p")
+	if (p2p || p2pInHostname) && !slices.Contains(server.Categories, p2pCategory) {
+		server.Categories = append(server.Categories, p2pCategory)
 	}
 	if tcp {
 		server.TCP = true
 		for _, port := range tcpPorts {
-			server.TCPPorts = appendIfMissing(server.TCPPorts, port)
+			if !slices.Contains(server.TCPPorts, port) {
+				server.TCPPorts = append(server.TCPPorts, port)
+			}
 		}
 	}
 	if udp {
 		server.UDP = true
 		for _, port := range udpPorts {
-			server.UDPPorts = appendIfMissing(server.UDPPorts, port)
+			if !slices.Contains(server.UDPPorts, port) {
+				server.UDPPorts = append(server.UDPPorts, port)
+			}
 		}
 	}
 	hts[host] = server
@@ -55,8 +63,8 @@ func (hts hostToServer) mergeWithFallback(fallback hostToServer) {
 			fallbackIPs = nil
 		}
 
-		p2pTagged := slices.Contains(server.Categories, "p2p")
-		hts.add(host, fallbackIPs, server.TCP, server.UDP, server.TCPPorts, server.UDPPorts, p2pTagged)
+		p2p := slices.Contains(server.Categories, "p2p")
+		hts.add(host, fallbackIPs, server.TCP, server.UDP, server.TCPPorts, server.UDPPorts, p2p)
 	}
 }
 
