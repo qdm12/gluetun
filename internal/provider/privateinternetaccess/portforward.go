@@ -83,7 +83,9 @@ func (p *Provider) PortForward(ctx context.Context,
 
 	// First time binding
 	for ctx.Err() == nil {
-		err = bindPort(ctx, privateIPClient, p.apiIP, data)
+		err = bindPortRetryRequest(ctx, logger, firstBindRetryDelays, func(ctx context.Context) error {
+			return bindPort(ctx, privateIPClient, p.apiIP, data)
+		})
 		if err == nil {
 			break
 		} else if !errors.Is(err, errPortBusy) {
@@ -432,7 +434,38 @@ func fetchPortForwardData(ctx context.Context, client *http.Client, apiIP netip.
 	return port, data.Signature, expiration, err
 }
 
-var errPortBusy = errors.New("port is busy")
+var (
+	errPortBusy        = errors.New("port is busy")
+	errBindPortRequest = errors.New("bind port request failed")
+)
+
+// firstBindRetryDelays are the delays between attempts when the first
+// bind port request fails to complete, for example because the tunnel
+// is still settling right after it came up.
+var firstBindRetryDelays = []time.Duration{2 * time.Second, 4 * time.Second} //nolint:gochecknoglobals
+
+// bindPortRetryRequest calls bind, and calls it again after each of the
+// given delays if it fails with errBindPortRequest. Other errors are
+// returned immediately.
+func bindPortRetryRequest(ctx context.Context, logger utils.Logger,
+	retryDelays []time.Duration, bind func(ctx context.Context) error,
+) (err error) {
+	for _, delay := range retryDelays {
+		err = bind(ctx)
+		if !errors.Is(err, errBindPortRequest) {
+			return err
+		}
+		logger.Warn(err.Error() + " - retrying in " + delay.String())
+		timer := time.NewTimer(delay)
+		select {
+		case <-ctx.Done():
+			timer.Stop()
+			return err
+		case <-timer.C:
+		}
+	}
+	return bind(ctx)
+}
 
 var (
 	regexPortBusy = regexp.MustCompile(`^port \d+ is busy\. `)
@@ -473,7 +506,7 @@ func bindPort(ctx context.Context, client *http.Client, apiIPAddress netip.Addr,
 
 	response, err := client.Do(request)
 	if err != nil {
-		return replaceInErr(err, errSubstitutions)
+		return fmt.Errorf("%w: %w", errBindPortRequest, replaceInErr(err, errSubstitutions))
 	}
 	defer response.Body.Close()
 

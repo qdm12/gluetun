@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -346,4 +347,84 @@ func Test_replaceInString(t *testing.T) {
 			assert.Equal(t, testCase.result, result)
 		})
 	}
+}
+
+type noopLogger struct{}
+
+func (noopLogger) Debug(string) {}
+func (noopLogger) Info(string)  {}
+func (noopLogger) Warn(string)  {}
+func (noopLogger) Error(string) {}
+
+func Test_bindPortRetryRequest(t *testing.T) {
+	t.Parallel()
+
+	requestErr := fmt.Errorf("%w: context deadline exceeded", errBindPortRequest)
+	otherErr := errors.New("HTTP status code not OK")
+	delays := []time.Duration{time.Millisecond, time.Millisecond}
+
+	testCases := map[string]struct {
+		results   []error
+		err       error
+		callCount int
+	}{
+		"success_first_try": {
+			results:   []error{nil},
+			callCount: 1,
+		},
+		"request_error_then_success": {
+			results:   []error{requestErr, nil},
+			callCount: 2,
+		},
+		"request_error_exhausts_retries": {
+			results:   []error{requestErr, requestErr, requestErr},
+			err:       requestErr,
+			callCount: 3,
+		},
+		"port_busy_not_retried": {
+			results:   []error{errPortBusy},
+			err:       errPortBusy,
+			callCount: 1,
+		},
+		"other_error_not_retried": {
+			results:   []error{otherErr},
+			err:       otherErr,
+			callCount: 1,
+		},
+	}
+
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			callCount := 0
+			bind := func(context.Context) error {
+				err := testCase.results[callCount]
+				callCount++
+				return err
+			}
+
+			err := bindPortRetryRequest(context.Background(), noopLogger{}, delays, bind)
+
+			assert.ErrorIs(t, err, testCase.err)
+			assert.Equal(t, testCase.callCount, callCount)
+		})
+	}
+}
+
+func Test_bindPortRetryRequest_stopsOnContextCancel(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	callCount := 0
+	bind := func(context.Context) error {
+		callCount++
+		cancel()
+		return errBindPortRequest
+	}
+
+	err := bindPortRetryRequest(ctx, noopLogger{}, []time.Duration{time.Hour}, bind)
+
+	assert.ErrorIs(t, err, errBindPortRequest)
+	assert.Equal(t, 1, callCount)
 }
