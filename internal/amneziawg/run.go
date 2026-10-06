@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net"
 
-	amneziaconn "github.com/amnezia-vpn/amneziawg-go/conn"
-	amneziadevice "github.com/amnezia-vpn/amneziawg-go/device"
+	amneziaconn "github.com/amnezia-vpn/amneziawg-go/v3/conn"
+	amneziadevice "github.com/amnezia-vpn/amneziawg-go/v3/device"
 	"github.com/qdm12/gluetun/internal/cleanup"
 	"github.com/qdm12/gluetun/internal/wireguard"
 )
