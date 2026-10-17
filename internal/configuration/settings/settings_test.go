@@ -140,133 +140,16 @@ func Test_Settings_String(t *testing.T) {
 	}
 }
 
-func Test_Settings_applyVPNDNS(t *testing.T) {
-	t.Parallel()
-
-	const vpnDNS = "10.0.0.1:53"
-	testCases := map[string]struct {
-		settings Settings
-		dns      DNS
-	}{
-		"amneziawg_config_dns": {
-			settings: Settings{
-				VPN: VPN{
-					Type: constvpn.AmneziaWg,
-					AmneziaWg: AmneziaWg{
-						DNSServers: []netip.AddrPort{netip.MustParseAddrPort(vpnDNS)},
-					},
-				},
-			},
-			dns: DNS{
-				UpstreamType:           DNSUpstreamTypePlain,
-				UpstreamPlainAddresses: []netip.AddrPort{netip.MustParseAddrPort(vpnDNS)},
-			},
-		},
-		"explicit_plain_uses_config_addresses": {
-			settings: Settings{
-				VPN: VPN{Type: constvpn.AmneziaWg, AmneziaWg: AmneziaWg{
-					DNSServers: []netip.AddrPort{netip.MustParseAddrPort(vpnDNS)},
-				}},
-				DNS: DNS{UpstreamType: DNSUpstreamTypePlain},
-			},
-			dns: DNS{
-				UpstreamType:           DNSUpstreamTypePlain,
-				UpstreamPlainAddresses: []netip.AddrPort{netip.MustParseAddrPort(vpnDNS)},
-			},
-		},
-		"explicit_dns_takes_precedence": {
-			settings: Settings{
-				VPN: VPN{
-					Type: constvpn.AmneziaWg,
-					AmneziaWg: AmneziaWg{
-						DNSServers: []netip.AddrPort{netip.MustParseAddrPort(vpnDNS)},
-					},
-				},
-				DNS: DNS{
-					UpstreamType: DNSUpstreamTypeDoh,
-					UpstreamPlainAddresses: []netip.AddrPort{
-						netip.MustParseAddrPort("1.1.1.1:53"),
-					},
-				},
-			},
-			dns: DNS{
-				UpstreamType: DNSUpstreamTypeDoh,
-				UpstreamPlainAddresses: []netip.AddrPort{
-					netip.MustParseAddrPort("1.1.1.1:53"),
-				},
-			},
-		},
-		"explicit_doh_takes_precedence": {
-			settings: Settings{
-				VPN: VPN{
-					Type: constvpn.AmneziaWg,
-					AmneziaWg: AmneziaWg{
-						DNSServers: []netip.AddrPort{netip.MustParseAddrPort(vpnDNS)},
-					},
-				},
-				DNS: DNS{UpstreamType: DNSUpstreamTypeDoh},
-			},
-			dns: DNS{UpstreamType: DNSUpstreamTypeDoh},
-		},
-		"explicit_dot_takes_precedence": {
-			settings: Settings{
-				VPN: VPN{
-					Type: constvpn.AmneziaWg,
-					AmneziaWg: AmneziaWg{
-						DNSServers: []netip.AddrPort{netip.MustParseAddrPort(vpnDNS)},
-					},
-				},
-				DNS: DNS{UpstreamType: DNSUpstreamTypeDot},
-			},
-			dns: DNS{UpstreamType: DNSUpstreamTypeDot},
-		},
-		"explicit_resolvers_take_precedence": {
-			settings: Settings{
-				VPN: VPN{
-					Type: constvpn.AmneziaWg,
-					AmneziaWg: AmneziaWg{
-						DNSServers: []netip.AddrPort{netip.MustParseAddrPort(vpnDNS)},
-					},
-				},
-				DNS: DNS{Providers: []string{"cloudflare"}},
-			},
-			dns: DNS{Providers: []string{"cloudflare"}},
-		},
-		"other_vpn_type_ignores_amneziawg_dns": {
-			settings: Settings{
-				VPN: VPN{
-					Type: constvpn.Wireguard,
-					AmneziaWg: AmneziaWg{
-						DNSServers: []netip.AddrPort{netip.MustParseAddrPort(vpnDNS)},
-					},
-				},
-			},
-		},
-	}
-
-	for name, testCase := range testCases {
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-
-			settings := testCase.settings
-			settings.applyVPNDNS()
-
-			assert.Equal(t, testCase.dns, settings.DNS)
-		})
-	}
-}
-
 func Test_Settings_Read_amneziaWGConfigFields(t *testing.T) {
 	t.Parallel()
 
 	settingsReader := reader.New(reader.Settings{
 		Sources: []reader.Source{mapSource{
-			"VPN_TYPE":              constvpn.AmneziaWg,
-			"AMNEZIAWG_ALLOWED_IPS": "0.0.0.0/0,::/0",
+			"VPN_TYPE":                              constvpn.AmneziaWg,
+			"AMNEZIAWG_ALLOWED_IPS":                   "0.0.0.0/0,::/0",
 			"AMNEZIAWG_PERSISTENT_KEEPALIVE_INTERVAL": "25-35",
 			"AMNEZIAWG_RANDOM_TRAILERS":               "on",
 			"AMNEZIAWG_DISABLE_COOKIES":               "on",
-			"AMNEZIAWG_DNS":                           "1.1.1.1,8.8.8.8",
 		}},
 	})
 	settings := Settings{}
@@ -283,9 +166,4 @@ func Test_Settings_Read_amneziaWGConfigFields(t *testing.T) {
 	assert.Zero(t, *settings.VPN.AmneziaWg.Wireguard.PersistentKeepaliveInterval)
 	assert.True(t, *settings.VPN.AmneziaWg.RandomTrailers)
 	assert.True(t, *settings.VPN.AmneziaWg.DisableCookies)
-	assert.Equal(t, DNSUpstreamTypePlain, settings.DNS.UpstreamType)
-	assert.Equal(t, []netip.AddrPort{
-		netip.MustParseAddrPort("1.1.1.1:53"),
-		netip.MustParseAddrPort("8.8.8.8:53"),
-	}, settings.DNS.UpstreamPlainAddresses)
 }

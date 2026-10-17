@@ -3,7 +3,6 @@ package settings
 import (
 	"fmt"
 	"math"
-	"net/netip"
 	"strconv"
 	"strings"
 	"time"
@@ -75,9 +74,6 @@ type AmneziaWg struct {
 	RandomTrailers *bool `json:"random_trailers"`
 	// DisableCookies controls whether cookie reply packets are disabled.
 	DisableCookies *bool `json:"disable_cookies"`
-	// DNSServers contains DNS servers read from the AmneziaWG configuration file.
-	// They are applied to the top-level DNS settings after all sources are read.
-	DNSServers []netip.AddrPort `json:"-"`
 }
 
 func (a *AmneziaWg) read(r *reader.Reader) (err error) {
@@ -150,11 +146,6 @@ func (a *AmneziaWg) read(r *reader.Reader) (err error) {
 		return err
 	}
 
-	a.DNSServers, err = parseAmneziaWGDNSServers(r.Get("AMNEZIAWG_DNS", opt))
-	if err != nil {
-		return fmt.Errorf("AMNEZIAWG_DNS: %w", err)
-	}
-
 	return nil
 }
 
@@ -187,7 +178,6 @@ func (a AmneziaWg) copy() (copied AmneziaWg) {
 		PersistentKeepaliveInterval: gosettings.CopyPointer(a.PersistentKeepaliveInterval),
 		RandomTrailers:              gosettings.CopyPointer(a.RandomTrailers),
 		DisableCookies:              gosettings.CopyPointer(a.DisableCookies),
-		DNSServers:                  gosettings.CopySlice(a.DNSServers),
 	}
 }
 
@@ -220,7 +210,6 @@ func (a *AmneziaWg) overrideWith(other AmneziaWg) {
 		other.Wireguard.PersistentKeepaliveInterval)
 	a.RandomTrailers = gosettings.OverrideWithPointer(a.RandomTrailers, other.RandomTrailers)
 	a.DisableCookies = gosettings.OverrideWithPointer(a.DisableCookies, other.DisableCookies)
-	a.DNSServers = gosettings.OverrideWithSlice(a.DNSServers, other.DNSServers)
 }
 
 func (a *AmneziaWg) setDefaults(vpnProvider string) {
@@ -267,7 +256,6 @@ func (a *AmneziaWg) setDefaults(vpnProvider string) {
 		a.Wireguard.PersistentKeepaliveInterval)
 	a.RandomTrailers = gosettings.DefaultPointer(a.RandomTrailers, false)
 	a.DisableCookies = gosettings.DefaultPointer(a.DisableCookies, false)
-	a.DNSServers = gosettings.DefaultSlice(a.DNSServers, []netip.AddrPort{})
 }
 
 func (a *AmneziaWg) normalizePersistentKeepalive(interval *[2]uint32,
@@ -519,24 +507,6 @@ func readAmneziaWGBool(r *reader.Reader, key string) (value *bool, err error) {
 	}
 }
 
-func parseAmneziaWGDNSServers(value *string) (servers []netip.AddrPort, err error) {
-	if value == nil {
-		return nil, nil
-	}
-
-	for serverString := range strings.SplitSeq(*value, ",") {
-		serverString = strings.TrimSpace(serverString)
-		server, err := netip.ParseAddr(serverString)
-		if err != nil {
-			return nil, fmt.Errorf("parsing address %q: %w", serverString, err)
-		}
-		const dnsPort = 53
-		servers = append(servers, netip.AddrPortFrom(server, dnsPort))
-	}
-
-	return servers, nil
-}
-
 // validateHeaderProtectionKey checks the base64 encoded header protection key,
 // only used by AmneziaWG 3 and onwards. An empty key disables it.
 func validateHeaderProtectionKey(key string) error {
@@ -546,7 +516,7 @@ func validateHeaderProtectionKey(key string) error {
 
 	_, err := wgtypes.ParseKey(key)
 	if err != nil {
-		return fmt.Errorf("must be a 32-byte base64 encoded key: %w", err)
+		return err
 	}
 	return nil
 }

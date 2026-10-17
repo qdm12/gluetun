@@ -115,7 +115,6 @@ func (c AmneziawgConfig) Get(key string) (value string, isSet bool) {
 		{"amneziawg_endpoint_port", c.Wireguard.EndpointPort},
 		{"amneziawg_allowed_ips", c.Wireguard.AllowedIPs},
 		{"amneziawg_persistent_keepalive_interval", c.Wireguard.PersistentKeepalive},
-		{"amneziawg_dns", c.Wireguard.DNS},
 		{"amneziawg_jc", c.Jc},
 		{"amneziawg_jmin", c.Jmin},
 		{"amneziawg_jmax", c.Jmax},

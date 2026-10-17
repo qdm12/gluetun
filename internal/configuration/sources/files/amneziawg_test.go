@@ -39,7 +39,7 @@ func Test_Source_ParseAmneziawgConf(t *testing.T) {
 [Interface]
 PrivateKey = QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8=
 Address = 10.38.22.35/32
-DNS = 193.138.218.74, 1.1.1.1
+DNS = 193.138.218.74
 Jc = 4
 H1 = 721391205
 I1 = <b 0x1234>
@@ -48,7 +48,7 @@ DisableCookies = on
 
 [Peer]
 PresharedKey = YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g=
-AllowedIPs = 0.0.0.0/0, ::/0
+AllowedIPs = 0.0.0.0/0,::/0
 PersistentKeepalive = 25-35
 `,
 			amneziawg: AmneziawgConfig{
@@ -56,8 +56,7 @@ PersistentKeepalive = 25-35
 					PrivateKey:          ptrTo("QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8="),
 					PreSharedKey:        ptrTo("YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g="),
 					Addresses:           ptrTo("10.38.22.35/32"),
-					DNS:                 ptrTo("193.138.218.74, 1.1.1.1"),
-					AllowedIPs:          ptrTo("0.0.0.0/0, ::/0"),
+					AllowedIPs:          ptrTo("0.0.0.0/0,::/0"),
 					PersistentKeepalive: ptrTo("25-35"),
 				},
 				Jc:             ptrTo("4"),

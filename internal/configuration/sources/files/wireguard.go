@@ -29,7 +29,6 @@ type WireguardConfig struct {
 	PrivateKey          *string
 	PreSharedKey        *string
 	Addresses           *string
-	DNS                 *string
 	PublicKey           *string
 	EndpointIP          *string
 	EndpointPort        *string
@@ -70,7 +69,6 @@ func ParseWireguardConf(path string) (config WireguardConfig, err error) {
 func parseWireguardInterfaceSection(interfaceSection *ini.Section, config *WireguardConfig) {
 	config.PrivateKey = getINIKeyFromSection(interfaceSection, "PrivateKey")
 	config.Addresses = getINIKeyFromSection(interfaceSection, "Address")
-	config.DNS = getINIKeyFromSection(interfaceSection, "DNS")
 }
 
 func parseWireguardPeerSection(peerSection *ini.Section, config *WireguardConfig) {

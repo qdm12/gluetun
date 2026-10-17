@@ -13,8 +13,6 @@ import (
 func Test_Source_Get(t *testing.T) {
 	t.Parallel()
 
-	const testFile = "test_file"
-
 	testCases := map[string]struct {
 		makeSource func(tempDir string) (source *Source, err error)
 		key        string
@@ -36,11 +34,11 @@ func Test_Source_Get(t *testing.T) {
 					environ:       map[string]string{},
 				}, nil
 			},
-			key: testFile,
+			key: "test_file",
 		},
 		"empty_secret_file": {
 			makeSource: func(tempDir string) (source *Source, err error) {
-				secretFilepath := filepath.Join(tempDir, testFile)
+				secretFilepath := filepath.Join(tempDir, "test_file")
 				const permission = fs.FileMode(0o600)
 				err = os.WriteFile(secretFilepath, nil, permission)
 				if err != nil {
@@ -51,12 +49,12 @@ func Test_Source_Get(t *testing.T) {
 					environ:       map[string]string{},
 				}, nil
 			},
-			key:   testFile,
+			key:   "test_file",
 			isSet: true,
 		},
 		"default_secret_file": {
 			makeSource: func(tempDir string) (source *Source, err error) {
-				secretFilepath := filepath.Join(tempDir, testFile)
+				secretFilepath := filepath.Join(tempDir, "test_file")
 				const permission = fs.FileMode(0o600)
 				err = os.WriteFile(secretFilepath, []byte{'A'}, permission)
 				if err != nil {
@@ -67,7 +65,7 @@ func Test_Source_Get(t *testing.T) {
 					environ:       map[string]string{},
 				}, nil
 			},
-			key:   testFile,
+			key:   "test_file",
 			value: "A",
 			isSet: true,
 		},
@@ -86,7 +84,7 @@ func Test_Source_Get(t *testing.T) {
 					},
 				}, nil
 			},
-			key:   testFile,
+			key:   "test_file",
 			value: "A",
 			isSet: true,
 		},

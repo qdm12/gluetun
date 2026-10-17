@@ -23,15 +23,11 @@ func Test_Source_Get_amneziaWGConfigFields(t *testing.T) {
 	}{
 		"allowed_ips": {
 			key:   "amneziawg_allowed_ips",
-			value: "0.0.0.0/0, ::/0",
+			value: "0.0.0.0/0,::/0",
 		},
 		"persistent_keepalive": {
 			key:   "amneziawg_persistent_keepalive_interval",
 			value: "25-35",
-		},
-		"dns": {
-			key:   "amneziawg_dns",
-			value: "1.1.1.1, 8.8.8.8",
 		},
 		"random_trailers": {
 			key:   "amneziawg_random_trailers",
@@ -53,12 +49,11 @@ func Test_Source_Get_amneziaWGConfigFields(t *testing.T) {
 			require.NoError(t, err)
 			config := `[Interface]
 PrivateKey = qOZ8vN2mK4pL7wR1tY6uI3oP5aS9dF0gH8jK2lM4nB0=
-DNS = 1.1.1.1, 8.8.8.8
 RandomTrailers = on
 DisableCookies = on
 
 [Peer]
-AllowedIPs = 0.0.0.0/0, ::/0
+AllowedIPs = 0.0.0.0/0,::/0
 PersistentKeepalive = 25-35
 `
 			configPath := filepath.Join(configDirectory, "awg0.conf")

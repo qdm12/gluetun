@@ -77,7 +77,7 @@ DisableCookies = %[1]s
 PublicKey = `+publicKey+`
 PresharedKey = `+presharedKey+`
 Endpoint = 198.51.100.2:51820
-AllowedIPs = 0.0.0.0/0, ::/0
+AllowedIPs = 0.0.0.0/0,::/0
 PersistentKeepalive = 25-35
 `, testCase.flags)
 			err = os.WriteFile(filepath.Join(configDirectory, "awg0.conf"), []byte(config), 0o600)
@@ -133,15 +133,13 @@ PersistentKeepalive = 25-35
 			assert.Zero(t, *amneziaWG.Wireguard.PersistentKeepaliveInterval)
 			assert.Equal(t, testCase.enabled, *amneziaWG.RandomTrailers)
 			assert.Equal(t, testCase.enabled, *amneziaWG.DisableCookies)
-			if testCase.upstreamType == settings.DNSUpstreamTypeDot {
+			if testCase.upstreamType != settings.DNSUpstreamTypePlain {
 				assert.Equal(t, settings.DNSUpstreamTypeDot, configuration.DNS.UpstreamType)
 				assert.Empty(t, configuration.DNS.UpstreamPlainAddresses)
 				return
 			}
 			assert.Equal(t, settings.DNSUpstreamTypePlain, configuration.DNS.UpstreamType)
-			assert.Equal(t, []netip.AddrPort{
-				netip.MustParseAddrPort("9.9.9.9:53"), netip.MustParseAddrPort("149.112.112.112:53"),
-			}, configuration.DNS.UpstreamPlainAddresses)
+			assert.Empty(t, configuration.DNS.UpstreamPlainAddresses)
 		})
 	}
 }

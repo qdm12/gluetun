@@ -41,7 +41,7 @@ func Test_AmneziaWg_validate(t *testing.T) {
 				settings.HeaderProtectionKey = new("not-a-key!")
 				return settings
 			},
-			errMessage: "header protection key: must be a 32-byte base64 encoded key",
+			errMessage: "illegal base64 data",
 		},
 		"header_protection_key_invalid_size": {
 			makeSettings: func() AmneziaWg {
@@ -49,7 +49,7 @@ func Test_AmneziaWg_validate(t *testing.T) {
 				settings.HeaderProtectionKey = new("abcd")
 				return settings
 			},
-			errMessage: "header protection key: must be a 32-byte base64 encoded key: wgtypes: incorrect key size: 3",
+			errMessage: "header protection key: wgtypes: incorrect key size: 3",
 		},
 		"header_protection_key_hexadecimal": {
 			makeSettings: func() AmneziaWg {
@@ -57,7 +57,7 @@ func Test_AmneziaWg_validate(t *testing.T) {
 				settings.HeaderProtectionKey = new("a8e67cbcdda62b8a4bef0475b58eae237a0fe5a4bd745d201fc8cada53389c1d")
 				return settings
 			},
-			errMessage: "header protection key: must be a 32-byte base64 encoded key: wgtypes: incorrect key size: 48",
+			errMessage: "header protection key: wgtypes: incorrect key size: 48",
 		},
 		"header_protection_key_valid_base64": {
 			makeSettings: func() AmneziaWg {
@@ -278,44 +278,6 @@ func Test_AmneziaWg_setDefaults_legacyPersistentKeepalive(t *testing.T) {
 
 	assert.Equal(t, [2]uint32{25, 25}, *amneziaWg.PersistentKeepaliveInterval)
 	assert.Zero(t, *amneziaWg.Wireguard.PersistentKeepaliveInterval)
-}
-
-func Test_parseAmneziaWGDNSServers(t *testing.T) {
-	t.Parallel()
-
-	const addresses = "1.1.1.1, 2606:4700:4700::1111"
-	const parseAddressError = "parsing address"
-	testCases := map[string]struct {
-		value      *string
-		servers    []netip.AddrPort
-		errMessage string
-	}{
-		"unset": {},
-		"addresses": {
-			value: new(addresses),
-			servers: []netip.AddrPort{
-				netip.MustParseAddrPort("1.1.1.1:53"), netip.MustParseAddrPort("[2606:4700:4700::1111]:53"),
-			},
-		},
-		"search_domain_rejected": {value: new("example.internal"), errMessage: parseAddressError},
-		"invalid_ipv4":           {value: new("999.1.1.1"), errMessage: parseAddressError},
-		"invalid_ipv6":           {value: new("2001:db8:::1"), errMessage: parseAddressError},
-		"empty_entry":            {value: new("1.1.1.1,"), errMessage: parseAddressError},
-	}
-
-	for name, testCase := range testCases {
-		t.Run(name, func(t *testing.T) {
-			t.Parallel()
-
-			servers, err := parseAmneziaWGDNSServers(testCase.value)
-			if testCase.errMessage != "" {
-				assert.ErrorContains(t, err, testCase.errMessage)
-			} else {
-				require.NoError(t, err)
-			}
-			assert.Equal(t, testCase.servers, servers)
-		})
-	}
 }
 
 func Test_readAmneziaWGBool(t *testing.T) {

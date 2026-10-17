@@ -59,19 +59,18 @@ PresharedKey = YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g=
 [Interface]
 PrivateKey = QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8=
 Address = 10.38.22.35/32
-DNS = 193.138.218.74, 1.1.1.1
+DNS = 193.138.218.74
 
 [Peer]
 PresharedKey = YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g=
-AllowedIPs = 0.0.0.0/0, ::/0
+AllowedIPs = 0.0.0.0/0,::/0
 PersistentKeepalive = 25
 `,
 			wireguard: WireguardConfig{
 				PrivateKey:          ptrTo("QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8="),
 				PreSharedKey:        ptrTo("YJ680VN+dGrdsWNjSFqZ6vvwuiNhbq502ZL3G7Q3o3g="),
 				Addresses:           ptrTo("10.38.22.35/32"),
-				DNS:                 ptrTo("193.138.218.74, 1.1.1.1"),
-				AllowedIPs:          ptrTo("0.0.0.0/0, ::/0"),
+				AllowedIPs:          ptrTo("0.0.0.0/0,::/0"),
 				PersistentKeepalive: ptrTo("25"),
 			},
 		},
@@ -105,7 +104,6 @@ func Test_parseWireguardInterfaceSection(t *testing.T) {
 		iniData    string
 		privateKey *string
 		addresses  *string
-		dns        *string
 	}{
 		"no_fields": {
 			iniData: `[Interface]`,
@@ -121,11 +119,9 @@ PrivateKey = x
 [Interface]
 PrivateKey = QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8=
 Address = 10.38.22.35/32
-DNS = 1.1.1.1, 2606:4700:4700::1111
 `,
 			privateKey: ptrTo("QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8="),
 			addresses:  ptrTo("10.38.22.35/32"),
-			dns:        ptrTo("1.1.1.1, 2606:4700:4700::1111"),
 		},
 	}
 
@@ -143,7 +139,6 @@ DNS = 1.1.1.1, 2606:4700:4700::1111
 
 			assert.Equal(t, testCase.privateKey, config.PrivateKey)
 			assert.Equal(t, testCase.addresses, config.Addresses)
-			assert.Equal(t, testCase.dns, config.DNS)
 		})
 	}
 }
@@ -186,12 +181,12 @@ Endpoint = 1.2.3.4:51820`,
 			iniData: `[Peer]
 PublicKey = QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8=
 Endpoint = 1.2.3.4:51820
-AllowedIPs = 0.0.0.0/0, ::/0
+AllowedIPs = 0.0.0.0/0,::/0
 PersistentKeepalive = 25-35`,
 			publicKey:    ptrTo("QOlCgyA/Sn/c/+YNTIEohrjm8IZV+OZ2AUFIoX20sk8="),
 			endpointIP:   ptrTo("1.2.3.4"),
 			endpointPort: ptrTo("51820"),
-			allowedIPs:   ptrTo("0.0.0.0/0, ::/0"),
+			allowedIPs:   ptrTo("0.0.0.0/0,::/0"),
 			keepalive:    ptrTo("25-35"),
 		},
 		"ipv6_endpoint": {
