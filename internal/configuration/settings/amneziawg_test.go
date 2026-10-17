@@ -280,6 +280,34 @@ func Test_AmneziaWg_setDefaults_legacyPersistentKeepalive(t *testing.T) {
 	assert.Zero(t, *amneziaWg.Wireguard.PersistentKeepaliveInterval)
 }
 
+func Test_AmneziaWg_normalizePersistentKeepalive_invalidLegacyInterval(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		interval time.Duration
+		message  string
+	}{
+		"negative": {
+			interval: -time.Second,
+			message:  "duration -1s is negative",
+		},
+		"fractional_second": {
+			interval: 1500 * time.Millisecond,
+			message:  "duration 1.5s must be a whole number of seconds",
+		},
+	}
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			amneziaWg := AmneziaWg{}
+			assert.PanicsWithError(t, testCase.message, func() {
+				amneziaWg.normalizePersistentKeepalive(nil, &testCase.interval)
+			})
+		})
+	}
+}
+
 func Test_readAmneziaWGBool(t *testing.T) {
 	t.Parallel()
 

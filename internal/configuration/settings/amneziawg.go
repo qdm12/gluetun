@@ -268,8 +268,7 @@ func (a *AmneziaWg) normalizePersistentKeepalive(interval *[2]uint32,
 	case legacyInterval != nil:
 		persistentKeepaliveInterval, err := persistentKeepaliveDurationToRange(*legacyInterval)
 		if err != nil {
-			a.PersistentKeepaliveInterval = gosettings.DefaultPointer(a.PersistentKeepaliveInterval, [2]uint32{})
-			return
+			panic(err)
 		}
 		a.PersistentKeepaliveInterval = persistentKeepaliveInterval
 		a.Wireguard.PersistentKeepaliveInterval = new(time.Duration)
