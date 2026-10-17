@@ -145,8 +145,8 @@ func Test_Settings_Read_amneziaWGConfigFields(t *testing.T) {
 
 	settingsReader := reader.New(reader.Settings{
 		Sources: []reader.Source{mapSource{
-			"VPN_TYPE":                              constvpn.AmneziaWg,
-			"AMNEZIAWG_ALLOWED_IPS":                   "0.0.0.0/0,::/0",
+			"VPN_TYPE":              constvpn.AmneziaWg,
+			"AMNEZIAWG_ALLOWED_IPS": "0.0.0.0/0,::/0",
 			"AMNEZIAWG_PERSISTENT_KEEPALIVE_INTERVAL": "25-35",
 			"AMNEZIAWG_RANDOM_TRAILERS":               "on",
 			"AMNEZIAWG_DISABLE_COOKIES":               "on",
