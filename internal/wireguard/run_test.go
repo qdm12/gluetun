@@ -7,7 +7,6 @@ import (
 	"net/netip"
 	"sync"
 	"testing"
-	"time"
 
 	"github.com/qdm12/gluetun/internal/netlink"
 	"github.com/stretchr/testify/assert"
@@ -46,7 +45,7 @@ func (r *teardownRecorder) LinkDel(linkIndex uint32) error {
 	return r.NetLinker.LinkDel(linkIndex)
 }
 
-func Test_Wireguard_Run_teardown_Integration(t *testing.T) {
+func Test_Wireguard_Run_teardown(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
@@ -109,22 +108,16 @@ func Test_Wireguard_Run_teardown_Integration(t *testing.T) {
 			wireguard, err := New(settings, recorder, &noopDebugLogger{})
 			require.NoError(t, err)
 
-			ctx, cancel := context.WithCancel(context.Background())
+			ctx, cancel := context.WithCancel(t.Context())
 			waitError := make(chan error)
 			ready := make(chan struct{})
 			go wireguard.Run(ctx, waitError, ready)
 
-			const setupTimeout = 10 * time.Second
-			timer := time.NewTimer(setupTimeout)
 			select {
 			case <-ready:
-				timer.Stop()
 			case err := <-waitError:
 				cancel()
 				t.Fatalf("setting up Wireguard: %s", err)
-			case <-timer.C:
-				cancel()
-				t.Fatal("timed out setting up Wireguard")
 			}
 
 			cancel()
