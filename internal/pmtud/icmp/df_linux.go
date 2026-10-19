@@ -5,7 +5,7 @@ import (
 )
 
 func setDontFragment(fd uintptr, ipv4 bool) (err error) {
-	fdInt := int(fd) //nolint:gosec
+	fdInt := int(fd)
 	if ipv4 {
 		return unix.SetsockoptInt(fdInt, unix.IPPROTO_IP,
 			unix.IP_MTU_DISCOVER, unix.IP_PMTUDISC_PROBE)

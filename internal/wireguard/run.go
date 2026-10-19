@@ -29,7 +29,7 @@ func (w *Wireguard) Run(ctx context.Context, waitError chan<- error, ready chan<
 	setupFunction := setupUserSpace
 	userspace := false
 	switch w.settings.Implementation {
-	case "auto": //nolint:goconst
+	case "auto":
 		if !kernelSupported {
 			w.logger.Info("Using userspace implementation since Kernel support does not exist")
 			userspace = true

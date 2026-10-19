@@ -80,9 +80,9 @@ func Test_Provider_GetConnection(t *testing.T) {
 			storage.EXPECT().FilterServers(provider, testCase.selection).
 				Return(testCase.filteredServers, testCase.storageErr)
 
-			unzipper := (common.Unzipper)(nil)
-			warner := (common.Warner)(nil)
-			parallelResolver := (common.ParallelResolver)(nil)
+			unzipper := common.Unzipper(nil)
+			warner := common.Warner(nil)
+			parallelResolver := common.ParallelResolver(nil)
 			provider := New(storage, unzipper, warner, parallelResolver)
 
 			if testCase.panicMessage != "" {

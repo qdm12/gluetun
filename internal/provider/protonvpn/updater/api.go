@@ -146,7 +146,7 @@ func (c *apiClient) doRequest(request *http.Request) (
 		}
 	}()
 	// The request URL is hardcoded at the call sites, never user input.
-	response, err = c.httpClient.Do(request) //nolint:gosec
+	response, err = c.httpClient.Do(request)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -533,7 +533,7 @@ func (c *apiClient) authInfo(ctx context.Context, email string, unauthCookie coo
 		return "", "", "", "", "", 0, errors.New("username is empty in response")
 	}
 
-	version = int(*info.Version) //nolint:gosec
+	version = int(*info.Version)
 	return info.Username, info.Modulus, info.ServerEphemeral, info.Salt,
 		info.SRPSession, version, nil
 }

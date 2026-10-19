@@ -93,7 +93,7 @@ func Test_Provider_GetConnection(t *testing.T) {
 				Return(testCase.filteredServers, testCase.storageErr)
 
 			client := (*http.Client)(nil)
-			warner := (common.Warner)(nil)
+			warner := common.Warner(nil)
 			provider := New(storage, client, warner)
 
 			if testCase.panicMessage != "" {

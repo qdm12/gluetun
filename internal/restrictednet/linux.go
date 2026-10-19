@@ -75,7 +75,7 @@ func connectFD(ctx context.Context, fd int, destination netip.AddrPort) error {
 			if err != nil {
 				return fmt.Errorf("getsockopt error: %w", err)
 			} else if n != 0 {
-				return fmt.Errorf("connect failed asynchronously: %w", unix.Errno(n)) //nolint:gosec
+				return fmt.Errorf("connect failed asynchronously: %w", unix.Errno(n))
 			}
 
 			return nil
