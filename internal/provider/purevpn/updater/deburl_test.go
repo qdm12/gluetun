@@ -1,6 +1,8 @@
 package updater
 
 import (
+	"compress/gzip"
+	"io"
 	"os"
 	"testing"
 
@@ -11,7 +13,15 @@ import (
 func Test_extractDebURL(t *testing.T) {
 	t.Parallel()
 
-	html, err := os.ReadFile("testdata/index.html")
+	file, err := os.Open("testdata/index.html.gz")
+	require.NoError(t, err)
+	defer file.Close()
+
+	gzipReader, err := gzip.NewReader(file)
+	require.NoError(t, err)
+	defer gzipReader.Close()
+
+	html, err := io.ReadAll(gzipReader)
 	require.NoError(t, err)
 
 	debURLs, err := extractDebURL(string(html), "https://www.purevpn.com/download/linux-vpn")
