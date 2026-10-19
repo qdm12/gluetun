@@ -12,29 +12,52 @@ func Test_OpenVPNSelection_validate(t *testing.T) {
 	t.Parallel()
 
 	testCases := map[string]struct {
+		provider   string
 		protocol   string
 		customPort uint16
 		errMessage string
 	}{
-		"default_udp_no_custom_port": {},
-		"tcp_no_custom_port": {
+		"purevpn_udp_no_custom_port": {
+			provider: providers.Purevpn,
+		},
+		"purevpn_tcp_no_custom_port": {
+			provider: providers.Purevpn,
 			protocol: constants.TCP,
 		},
-		"udp_custom_port_allowed": {
+		// PureVPN server ports depend on the servers data, so any port is
+		// accepted and servers not supporting it are filtered out.
+		"purevpn_udp_custom_port_15021": {
+			provider:   providers.Purevpn,
 			customPort: 15021,
 		},
-		"tcp_custom_port_allowed": {
-			protocol:   constants.TCP,
-			customPort: 443,
-		},
-		"udp_custom_port_denied": {
+		"purevpn_udp_custom_port_5565": {
+			provider:   providers.Purevpn,
 			customPort: 5565,
-			errMessage: "custom endpoint port is not allowed: for VPN service provider purevpn",
 		},
-		"tcp_custom_port_denied": {
+		"purevpn_tcp_custom_port_8080": {
+			provider:   providers.Purevpn,
 			protocol:   constants.TCP,
 			customPort: 8080,
-			errMessage: "custom endpoint port is not allowed: for VPN service provider purevpn",
+		},
+		"mullvad_udp_custom_port_allowed": {
+			provider:   providers.Mullvad,
+			customPort: 1194,
+		},
+		"mullvad_udp_custom_port_denied": {
+			provider:   providers.Mullvad,
+			customPort: 5565,
+			errMessage: "custom endpoint port is not allowed: for VPN service provider mullvad",
+		},
+		"mullvad_tcp_custom_port_denied": {
+			provider:   providers.Mullvad,
+			protocol:   constants.TCP,
+			customPort: 8080,
+			errMessage: "custom endpoint port is not allowed: for VPN service provider mullvad",
+		},
+		"expressvpn_custom_port_denied": {
+			provider:   providers.Expressvpn,
+			customPort: 443,
+			errMessage: "custom endpoint port is not allowed: for VPN service provider expressvpn",
 		},
 	}
 
@@ -43,13 +66,13 @@ func Test_OpenVPNSelection_validate(t *testing.T) {
 			t.Parallel()
 
 			selection := OpenVPNSelection{}
-			selection.setDefaults(providers.Purevpn)
+			selection.setDefaults(testCase.provider)
 			if testCase.protocol != "" {
 				selection.Protocol = testCase.protocol
 			}
 			selection.CustomPort = new(testCase.customPort)
 
-			err := selection.validate(providers.Purevpn)
+			err := selection.validate(testCase.provider)
 
 			if testCase.errMessage == "" {
 				assert.NoError(t, err)

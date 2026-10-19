@@ -67,9 +67,10 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 	// Validate CustomPort
 	if *o.CustomPort != 0 {
 		switch vpnProvider {
-		// no restriction on port
+		// no restriction on port, the ports are only restricted by
+		// the ones supported by the servers data
 		case providers.Custom, providers.Cyberghost, providers.HideMyAss,
-			providers.Privatevpn, providers.Torguard:
+			providers.Privatevpn, providers.Purevpn, providers.Torguard:
 		// no custom port allowed
 		case providers.Expressvpn, providers.Fastestvpn,
 			providers.Giganews, providers.Ipvanish,
@@ -101,9 +102,6 @@ func (o OpenVPNSelection) validate(vpnProvider string) (err error) {
 			case providers.Protonvpn:
 				allowedTCP = []uint16{443, 5995, 8443}
 				allowedUDP = []uint16{80, 443, 1194, 4569, 5060, 51820}
-			case providers.Purevpn:
-				allowedTCP = []uint16{80, 443}
-				allowedUDP = []uint16{53, 1194, 15021}
 			case providers.SlickVPN:
 				allowedTCP = []uint16{443, 8080, 8888}
 				allowedUDP = []uint16{443, 8080, 8888}
