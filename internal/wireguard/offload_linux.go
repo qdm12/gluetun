@@ -51,5 +51,5 @@ func OpenTUNFile(name string) (*os.File, error) {
 		unix.Close(tunFD)
 		return nil, fmt.Errorf("setting nonblock: %w", err)
 	}
-	return os.NewFile(uintptr(tunFD), "/dev/net/tun"), nil //nolint:gosec
+	return os.NewFile(uintptr(tunFD), "/dev/net/tun"), nil
 }

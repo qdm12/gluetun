@@ -118,6 +118,8 @@
   description: "Concerns the code to update servers data"
 - name: "Category: New provider 🆕"
   color: "ffc7ea"
+- name: "Category: AmneziaWG 🔐"
+  color: "ffc7ea"
 - name: "Category: OpenVPN 🔐"
   color: "ffc7ea"
 - name: "Category: Wireguard 🔐"

@@ -34,6 +34,7 @@ type firewallImpl interface { //nolint:interfacebloat
 	AcceptEstablishedRelatedTraffic(ctx context.Context) error
 	AcceptInputToPort(ctx context.Context, intf string, port uint16, remove bool) error
 	AcceptInputToSubnet(ctx context.Context, intf string, subnet netip.Prefix) error
+	AcceptIpv6MulticastInput(ctx context.Context, intf string) error
 	AcceptIpv6MulticastOutput(ctx context.Context, intf string) error
 	AcceptOutput(ctx context.Context, protocol, intf string,
 		ip netip.Addr, port uint16, remove bool) error

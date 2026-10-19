@@ -92,8 +92,8 @@ func Test_Provider_GetConnection(t *testing.T) {
 				Return(testCase.filteredServers, testCase.storageErr)
 
 			client := (*http.Client)(nil)
-			warner := (common.Warner)(nil)
-			parallelResolver := (common.ParallelResolver)(nil)
+			warner := common.Warner(nil)
+			parallelResolver := common.ParallelResolver(nil)
 			provider := New(storage, client, warner, parallelResolver)
 
 			connection, err := provider.GetConnection(testCase.selection, testCase.ipv6Supported)

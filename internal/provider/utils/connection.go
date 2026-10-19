@@ -51,7 +51,7 @@ func GetConnection(provider string,
 	case "random":
 		// Randomize order of the servers struct so the first connection to be picked
 		// won't always be the same one.
-		rand.Shuffle(len(servers), func(i, j int) {
+		rand.Shuffle(len(servers), func(i, j int) { //nolint:gosec
 			servers[i], servers[j] = servers[j], servers[i]
 		})
 	case "ordered":
