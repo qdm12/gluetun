@@ -150,3 +150,55 @@ func Test_hasP2PFeature(t *testing.T) {
 		})
 	}
 }
+
+// Test_parseInventoryJSON_cities tests the city of each server is taken from
+// the cities of the inventory, which reference servers by their DNS entry ID.
+func Test_parseInventoryJSON_cities(t *testing.T) {
+	t.Parallel()
+
+	const content = `{
+		"body":{
+			"data_centers":[{"id":10,"ip":"1.2.3.4"}],
+			"dns":[
+				{"id":101,"hostname":"aa2-tcp.ptoserver.com","type":"primary"},
+				{"id":102,"hostname":"aabb2-udp.ptoserver.com","type":"primary"},
+				{"id":103,"hostname":"aacc2-udp.ptoserver.com","type":"primary"}
+			],
+			"cities":[
+				{
+					"id":1,"name":"First City","country":"AA",
+					"protocols":[
+						{"protocol":"TCP","dns":[{"dns_id":101,"port_number":80}]},
+						{"protocol":"UDP","dns":[{"dns_id":102,"port_number":15021}]}
+					]
+				},
+				{
+					"id":2,"name":"Second City","country":"AA",
+					"protocols":[
+						{"protocol":"UDP","dns":[{"dns_id":102,"port_number":15021}]}
+					]
+				},
+				{"id":3,"name":"","country":"AA","protocols":[]}
+			],
+			"countries":[
+				{
+					"data_centers":[{"id":10}],
+					"protocols":[
+						{"protocol":"TCP","dns":[{"dns_id":101,"port_number":80}]},
+						{"protocol":"UDP","dns":[{"dns_id":102,"port_number":15021}]},
+						{"protocol":"UDP","dns":[{"dns_id":103,"port_number":5565}]}
+					]
+				}
+			]
+		}
+	}`
+
+	hts, err := parseInventoryJSON(bytes.NewBufferString(content))
+	require.NoError(t, err)
+
+	assert.Equal(t, "First City", hts["aa2-tcp.ptoserver.com"].City)
+	// Listed in two cities, the first one in the inventory wins.
+	assert.Equal(t, "First City", hts["aabb2-udp.ptoserver.com"].City)
+	// Not listed in any city of the inventory.
+	assert.Empty(t, hts["aacc2-udp.ptoserver.com"].City)
+}

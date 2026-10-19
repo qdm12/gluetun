@@ -114,23 +114,26 @@ func (u *Updater) FetchServers(ctx context.Context, minServers int) (
 	return servers, nil
 }
 
-// withLocations sets the country, city and region of each server based on
-// the location codes contained in its hostname, and discards any server
+// withLocations sets the country and region of each server based on the
+// location codes contained in its hostname, keeping the city from the
+// inventory if the hostname does not contain one, and discards any server
 // for which no location could be found.
 func (u *Updater) withLocations(servers []models.Server) (kept []models.Server) {
 	kept = make([]models.Server, 0, len(servers))
 	for _, server := range servers {
-		country, city, warnings := parseHostname(server.Hostname)
+		country, hostCity, warnings := parseHostname(server.Hostname)
 		for _, warning := range warnings {
 			u.logger.Warn(warning)
 		}
-		if country == "" && city == "" {
+		if country == "" && server.City == "" {
 			continue
 		}
 		server.Country = country
-		server.City = city
+		if server.City == "" {
+			server.City = hostCity
+		}
 		// TODO v4: retro-compatibility, remove this
-		server.Region = getRegionFromCountryCity(country, city)
+		server.Region = getRegionFromCountryCity(country, server.City)
 		kept = append(kept, server)
 	}
 	return kept

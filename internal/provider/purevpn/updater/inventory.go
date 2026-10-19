@@ -77,8 +77,15 @@ type inventoryResponse struct {
 
 type inventoryBody struct {
 	Countries   []inventoryCountry    `json:"countries"`
+	Cities      []inventoryCity       `json:"cities"`
 	DNS         []inventoryDNS        `json:"dns"`
 	DataCenters []inventoryDataCenter `json:"data_centers"`
+}
+
+// inventoryCity is a city hosting servers, referenced by their DNS entry ID.
+type inventoryCity struct {
+	Name      string              `json:"name"`
+	Protocols []inventoryProtocol `json:"protocols"`
 }
 
 type inventoryCountry struct {
@@ -141,7 +148,33 @@ func parseInventoryJSON(reader io.Reader) (hts hostToServer, err error) {
 		}
 	}
 
+	hts.addCities(response.Body.Cities, dnsIDToHostname)
+
 	return hts, nil
+}
+
+// addCities sets the city of the servers hosted in each city of the inventory.
+// Servers without a hostname, or already having a city, are left as is.
+func (hts hostToServer) addCities(cities []inventoryCity, dnsIDToHostname map[uint]string) {
+	for _, city := range cities {
+		if city.Name == "" {
+			continue
+		}
+		for _, protocol := range city.Protocols {
+			for _, dns := range protocol.DNS {
+				hostname, ok := dnsIDToHostname[dns.DNSID]
+				if !ok {
+					continue
+				}
+				server, ok := hts[hostname]
+				if !ok || server.City != "" {
+					continue
+				}
+				server.City = city.Name
+				hts[hostname] = server
+			}
+		}
+	}
 }
 
 // addProtocolServers adds a server for each hostname of the protocol, served
