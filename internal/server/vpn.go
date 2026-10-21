@@ -104,6 +104,7 @@ func (h *vpnHandler) getSettings(w http.ResponseWriter) {
 func (h *vpnHandler) patchSettings(w http.ResponseWriter, r *http.Request) {
 	var overrideSettings settings.VPN
 	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
 	err := decoder.Decode(&overrideSettings)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
